@@ -36,3 +36,37 @@
     transform: rotate(360deg);
   }
 }
+
+.area{
+  padding:100px 45px 45px 100px
+}
+
+.login{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  padding-top: 50px;
+}
+
+.profile{
+  display: flex;
+  flex-direction: column;
+  /* flex-wrap: wrap; */
+  gap:15px;
+}
+
+.links-list{
+  gap:5px
+}
+
+.profile-actions{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  width: 100%;
+}
+
+.toolbar-left{
+  display: flex;
+}
