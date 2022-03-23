@@ -76,31 +76,38 @@ export function Profile() {
       </Card>
       <Card sx={{ minWidth: 300 }} variant="outlined">
         <Typography component="div" variant="h5" style={{ margin: "10px" }}>
-          Details
+          Profile Details
         </Typography>
-        <div style={{ textAlign: "left" }}>
+        <div>
           <CardContent>
             <Divider>
               <Chip label="UID" />
             </Divider>
+            <br/>
             <Typography variant="h6" component="div" gutterBottom>
               {user.uid}
             </Typography>
+            <br/>
             <Divider>
               <Chip label="AGE" />
             </Divider>
+            <br/>
             <Typography variant="h6" component="div" gutterBottom>
               {user.age}
             </Typography>
+            <br/>
             <Divider>
               <Chip label="PHONE NO." />
             </Divider>
+            <br/>
             <Typography variant="h6" component="div" gutterBottom>
               {user.phone}
             </Typography>
+            <br/>
             <Divider>
               <Chip label="EMAIL" />
             </Divider>
+            <br/>
             <Typography variant="h6" component="div" gutterBottom>
               {user.email}
             </Typography>
