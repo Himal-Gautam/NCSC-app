@@ -61,6 +61,7 @@ export function SignInSide() {
         .then((data) => {
           if (data.token) {
             ReactSession.set("token", data.token);
+            ReactSession.set("type", data.type);
             navigate("/dashboard/profile");
           }
         })

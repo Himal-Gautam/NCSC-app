@@ -1,7 +1,7 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ReactSession } from "react-client-session";
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { styled, useTheme } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar from "@mui/material/AppBar";
@@ -16,14 +16,16 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import ListItemText from "@mui/material/ListItemText";
+import SubjectIcon from "@mui/icons-material/Subject";
 import PersonIcon from "@mui/icons-material/Person";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import LinkIcon from "@mui/icons-material/Link";
 import LogoutIcon from "@mui/icons-material/Logout";
-import Zoom from '@mui/material/Zoom';
-import Tooltip from '@mui/material/Tooltip';
+import Zoom from "@mui/material/Zoom";
+import Tooltip from "@mui/material/Tooltip";
 
 const drawerWidth = 240;
 
@@ -113,17 +115,17 @@ function NavBar_() {
 
   const handleLogout = async () => {
     await fetch("http://localhost:4000/users/logout", {
-    method: "POST",
-    headers: new Headers({
-      Authorization: "Bearer " + ReactSession.get("token"),
-      "Content-Type": "application/json; charset=UTF-8",
-    }),
-  })
-    .catch((err) => {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + ReactSession.get("token"),
+        "Content-Type": "application/json; charset=UTF-8",
+      }),
+    }).catch((err) => {
       console.log(err);
     });
 
     ReactSession.remove("token");
+    ReactSession.remove("type");
     navigate("/login");
     window.close();
     window.open(window.location.href, "_blank");
@@ -131,17 +133,17 @@ function NavBar_() {
 
   const handleLogoutAll = async () => {
     await fetch("http://localhost:4000/users/logoutAll", {
-    method: "POST",
-    headers: new Headers({
-      Authorization: "Bearer " + ReactSession.get("token"),
-      "Content-Type": "application/json; charset=UTF-8",
-    }),
-  })
-    .catch((err) => {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + ReactSession.get("token"),
+        "Content-Type": "application/json; charset=UTF-8",
+      }),
+    }).catch((err) => {
       console.log(err);
     });
 
     ReactSession.remove("token");
+    ReactSession.remove("type");
     navigate("/login");
     window.close();
     window.open(window.location.href, "_blank");
@@ -152,7 +154,7 @@ function NavBar_() {
       <CssBaseline />
       <AppBar position="fixed" open={open}>
         <Toolbar>
-         <IconButton
+          <IconButton
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
@@ -194,19 +196,25 @@ function NavBar_() {
                 navigate(link);
               }}
             >
-              <Tooltip arrow={true} size="large" TransitionComponent={Zoom} title={text} placement="right">
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : "auto",
-                  justifyContent: "center",
-                }}
+              <Tooltip
+                arrow={true}
+                size="large"
+                TransitionComponent={Zoom}
+                title={text}
+                placement="right"
               >
-                {index === 0 ? <PersonIcon color="primary" /> : <></>}
-                {index === 1 ? <MenuBookIcon color="primary" /> : <></>}
-                {index === 2 ? <FeedbackIcon color="primary" /> : <></>}
-                {index === 3 ? <LinkIcon color="primary" /> : <></>}
-              </ListItemIcon>
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  }}
+                >
+                  {index === 0 ? <PersonIcon color="primary" /> : <></>}
+                  {index === 1 ? <MenuBookIcon color="primary" /> : <></>}
+                  {index === 2 ? <FeedbackIcon color="primary" /> : <></>}
+                  {index === 3 ? <LinkIcon color="primary" /> : <></>}
+                </ListItemIcon>
               </Tooltip>
               <ListItemText
                 primary={text.toUpperCase()}
@@ -215,54 +223,176 @@ function NavBar_() {
             </ListItemButton>
           ))}
         </List>
+        {ReactSession.get("type") === "admin" ? (
+          <>
+            <Divider />
+            <List>
+              {["users", "subjects"].map(
+                (text, index) => (
+                  <ListItemButton
+                    key={text}
+                    sx={{
+                      minHeight: 48,
+                      justifyContent: open ? "initial" : "center",
+                      px: 2.5,
+                    }}
+                    onClick={() => {
+                      let link = "/dashboard/" + text;
+                      navigate(link);
+                    }}
+                  >
+                    <Tooltip
+                      arrow={true}
+                      size="large"
+                      TransitionComponent={Zoom}
+                      title={text}
+                      placement="right"
+                    >
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          mr: open ? 3 : "auto",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {index === 0 ? <PeopleAltIcon color="primary" /> : <></>}
+                        {index === 1 ? <SubjectIcon color="primary" /> : <></>}
+                        {/* {index === 2 ? <FeedbackIcon color="primary" /> : <></>}
+                        {index === 3 ? <LinkIcon color="primary" /> : <></>} */}
+                      </ListItemIcon>
+                    </Tooltip>
+                    <ListItemText
+                      primary={text.toUpperCase()}
+                      sx={{ opacity: open ? 1 : 0 }}
+                    />
+                  </ListItemButton>
+                )
+              )}
+              {/* <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                }}
+                onClick={() => {
+                  let link = "/dashboard/users";
+                  navigate(link);
+                }}
+              >
+                <Tooltip
+                  arrow={true}
+                  size="large"
+                  TransitionComponent={Zoom}
+                  title="users"
+                  placement="right"
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <PeopleAltIcon color="primary" />
+                  </ListItemIcon>
+                </Tooltip>
+
+                <ListItemText primary="LOGOUT" sx={{ opacity: open ? 1 : 0 }} />
+              </ListItemButton>
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                }}
+                onClick={() => {
+                  let link = "/dashboard/subjects";
+                  navigate(link);
+                }}
+              >
+                <Tooltip
+                  arrow={true}
+                  size="large"
+                  TransitionComponent={Zoom}
+                  title="subjects"
+                  placement="right"
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <SubjectIcon color="primary" />
+                  </ListItemIcon>
+                </Tooltip>
+
+                <ListItemText primary="LOGOUT" sx={{ opacity: open ? 1 : 0 }} />
+              </ListItemButton> */}
+            </List>
+          </>
+        ) : (
+          <></>
+        )}
         <Divider />
         <List>
-        <ListItemButton
-          sx={{
-            minHeight: 48,
-            justifyContent: open ? "initial" : "center",
-            px: 2.5,
-          }}
-          onClick={handleLogout}
-        >
-              <Tooltip arrow={true} size="large" TransitionComponent={Zoom} title="Logout" placement="right">
-
-          <ListItemIcon
+          <ListItemButton
             sx={{
-              minWidth: 0,
-              mr: open ? 3 : "auto",
-              justifyContent: "center",
+              minHeight: 48,
+              justifyContent: open ? "initial" : "center",
+              px: 2.5,
             }}
+            onClick={handleLogout}
           >
-            <LogoutIcon color="primary" />
-          </ListItemIcon>
-          </Tooltip>
+            <Tooltip
+              arrow={true}
+              size="large"
+              TransitionComponent={Zoom}
+              title="Logout"
+              placement="right"
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <LogoutIcon color="primary" />
+              </ListItemIcon>
+            </Tooltip>
 
-          <ListItemText primary="LOGOUT" sx={{ opacity: open ? 1 : 0 }} />
-        </ListItemButton>
-        <ListItemButton
-          sx={{
-            minHeight: 48,
-            justifyContent: open ? "initial" : "center",
-            px: 2.5,
-          }}
-          onClick={handleLogoutAll}
-        >
-              <Tooltip arrow={true} size="large" TransitionComponent={Zoom} title="Logout All" placement="right">
-
-          <ListItemIcon
+            <ListItemText primary="LOGOUT" sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
+          <ListItemButton
             sx={{
-              minWidth: 0,
-              mr: open ? 3 : "auto",
-              justifyContent: "center",
+              minHeight: 48,
+              justifyContent: open ? "initial" : "center",
+              px: 2.5,
             }}
+            onClick={handleLogoutAll}
           >
-            <ExitToAppIcon color="primary" />
-          </ListItemIcon>
-          </Tooltip>
+            <Tooltip
+              arrow={true}
+              size="large"
+              TransitionComponent={Zoom}
+              title="Logout All"
+              placement="right"
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <ExitToAppIcon color="primary" />
+              </ListItemIcon>
+            </Tooltip>
 
-          <ListItemText primary="LOGOUT ALL" sx={{ opacity: open ? 1 : 0 }} />
-        </ListItemButton>
+            <ListItemText primary="LOGOUT ALL" sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
         </List>
         <Divider />
       </Drawer>

@@ -6,6 +6,8 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import React, { useState, useEffect } from "react";
 import CardActions from "@mui/material/CardActions";
+import Fab from "@mui/material/Fab";
+import AddIcon from "@mui/icons-material/Add";
 import Container from "@mui/material/Container";
 import PropTypes from "prop-types";
 import { styled } from "@mui/material/styles";
@@ -20,18 +22,18 @@ import DialogContentText from "@mui/material/DialogContentText";
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
 
-export function Profile() {
+export function Users() {
   const handleClickOpen = () => {
     setOpen(true);
   };
 
   const [open, setOpen] = React.useState(false);
   const token = ReactSession.get("token");
-  const [user, setUser] = useState({});
+  const [users, setUsers] = useState({});
   console.log(token);
 
   useEffect(() => {
-    fetch("http://localhost:4000/users/me", {
+    fetch("http://localhost:4000/users", {
       method: "GET",
       headers: new Headers({
         Authorization: "Bearer " + token,
@@ -40,9 +42,8 @@ export function Profile() {
     })
       .then((response) => response.json())
       .then((data) => {
-        data.name = data.name.toUpperCase();
-        data.role = data.role.toUpperCase();
-        setUser(data);
+        console.log(data)
+        setUsers(data);
       })
       .catch((err) => {
         console.log(err);
@@ -50,9 +51,9 @@ export function Profile() {
   }, []);
 
   return (
-    <div className="profile area">
+    <div className="area">
       <ChangePassword open={open} setOpen={setOpen} />
-      <Card sx={{ display: "flex", minWidth: 300 }} variant="outlined">
+      {/* {users.map((user)=> (<><Card sx={{ display: "flex", minWidth: 300, maxWidth: 500 }} variant="outlined">
         <CardMedia
           component="img"
           sx={{ maxWidth: 150, minHeight: 150 }}
@@ -71,15 +72,6 @@ export function Profile() {
             >
               <b>{user.role}</b>
             </Typography>
-          </CardContent>
-        </div>
-      </Card>
-      <Card sx={{ minWidth: 300 }} variant="outlined">
-        <Typography component="div" variant="h5" style={{ margin: "10px" }}>
-          Profile Details
-        </Typography>
-        <div>
-          <CardContent>
             <Divider>
               <Chip label="UID" />
             </Divider>
@@ -114,24 +106,19 @@ export function Profile() {
           </CardContent>
         </div>
       </Card>
-      <Card sx={{ minWidth: 300 }} variant="outlined">
-        <Typography component="div" variant="h5" style={{ margin: "10px" }}>
-          Actions
-        </Typography>
-        <CardActions>
-          <div className="profile-actions">
-            <Button size="medium" variant="outlined" onClick={handleClickOpen} fullWidth sx={{ maxWidth:500 }}>
-              Change Password
-            </Button>
-            <Button size="medium" variant="outlined" onClick={handleClickOpen} fullWidth sx={{ maxWidth:500 }}>
-              Mark Attendance
-            </Button>
-            <Button size="medium" variant="outlined" onClick={handleClickOpen} fullWidth sx={{ maxWidth:500 }}>
-              Submit Assignment
-            </Button>
-          </div>
-        </CardActions>
-      </Card>
+      </>
+      ))} */}
+      <Fab
+          color="primary"
+          aria-label="add"
+          style={{ position: "fixed", right: "20px", bottom: "20px" }}
+          size="large"
+          onClick={() => {
+            setOpen(true);
+          }}
+        >
+          <AddIcon />
+        </Fab>
     </div>
   );
 }
@@ -143,30 +130,39 @@ function ChangePassword({ open, setOpen }) {
   };
 
   const handleSubmit = () => {
-    fetch("http://localhost:4000/users/me", {
-      method: "PATCH",
+    fetch("http://localhost:4000/users", {
+      method: "POST",
       body: JSON.stringify({
-        password: newPassword,
+        name: name,
+        email: email,
+        age: age,
+        phone: phone,
+        uid: uid,
+        role: role,
+        password: password
       }),
       headers: new Headers({
-        Authorization: "Bearer " + ReactSession.get("token"),
-        "Content-Type": "application/json; charset=UTF-8",
-      }),
+        "Content-Type": "application/json; charset=UTF-8"
+      })
     }).catch((err) => {
       console.log(err);
     });
 
-    setOpen(false);
+    // setOpen(false);
   };
 
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [oldPassword, setOldPassword] = useState("  ");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState("");
+  const [age, setAge] = useState("");
+  const [uid, setUid] = useState(0);
+  const [phone, setPhone] = useState(0);
 
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Change Password</DialogTitle>
+        <DialogTitle>Add User</DialogTitle>
         <DialogContent>
           <DialogContentText>Change your Login Password here</DialogContentText>
           <TextField
@@ -174,40 +170,80 @@ function ChangePassword({ open, setOpen }) {
             variant="filled"
             autoFocus
             margin="dense"
-            id="old_password"
-            label="Old Password"
-            onChange={(e) => setOldPassword(e.target.value)}
-            type="password"
+            id="Name"
+            label="Name"
+            onChange={(e) => setName(e.target.value)}
+            type="text"
             fullWidth
           />
           <TextField
-            error={oldPassword === newPassword}
-            helperText="Old Password and New Password can't be same"
             required
             variant="filled"
             margin="dense"
-            id="new_password"
-            label="New Password"
-            onChange={(e) => setNewPassword(e.target.value)}
-            type="password"
+            id="Email"
+            label="Eamil"
+            onChange={(e) => setEmail(e.target.value)}
+            type="email"
+            fullWidth
+          />
+           <TextField
+            required
+            variant="filled"
+            margin="dense"
+            id="uid"
+            label="Uid"
+            onChange={(e) => setUid(e.target.value)}
+            type="text"
             fullWidth
           />
           <TextField
-            error={confirmPassword === newPassword ? false : true}
-            helperText="Confirm New Password and New Password should be same"
+            error={age < 0 && age > 100}
             required
             variant="filled"
             margin="dense"
-            id="confirm_password"
-            label="Confirm New Password"
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            id="Age"
+            label="Age"
+            onChange={(e) => setAge(e.target.value)}
+            type="number"
+            fullWidth
+          />
+          <TextField
+            error={age < 0 && age > 100}
+            required
+            variant="filled"
+            margin="dense"
+            id="phone"
+            label="Phone Number"
+            onChange={(e) => setPhone(e.target.value)}
+            type="number"
+            fullWidth
+          />
+          <TextField
+            error={age < 0 && age > 100}
+            required
+            variant="filled"
+            margin="dense"
+            id="role"
+            label="Role"
+            onChange={(e) => setRole(e.target.value)}
+            type="text"
+            fullWidth
+          />
+          <TextField
+            error={age < 0 && age > 100}
+            required
+            variant="filled"
+            margin="dense"
+            id="password"
+            label="Password"
+            onChange={(e) => setPassword(e.target.value)}
             type="password"
             fullWidth
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>Reset</Button>
+          <Button onClick={handleSubmit}>ADD</Button>
         </DialogActions>
       </Dialog>
     </div>
