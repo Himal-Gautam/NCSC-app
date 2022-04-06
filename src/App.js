@@ -10,6 +10,7 @@ import { Users } from "./Components/Users";
 import { NotFoundPage } from "./Components/NotFoundPage";
 import { Route, Routes, Navigate, BrowserRouter as Router  } from "react-router-dom";
 import { SignInSide } from  "./Components/SignInSide"
+import { Subjects } from  "./Components/Subjects"
 
 ReactSession.setStoreType("localstorage");
 
@@ -27,6 +28,7 @@ function App() {
           <Route path="/dashboard/links" element={<Links />} />
           <Route path="/dashboard/notices" element={<Notices />} />
           <Route path="/dashboard/users" element={<Users />} />
+          <Route path="/dashboard/subjects" element={<Subjects />} />
           <Route path="/*/*" element={<NotFoundPage />} />
         </Routes>
     </div>

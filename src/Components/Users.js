@@ -1,155 +1,36 @@
-import { ReactSession } from "react-client-session";
+import React, { useState, useEffect } from "react";
 import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import React, { useState, useEffect } from "react";
-import CardActions from "@mui/material/CardActions";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
+import CardMedia from "@mui/material/CardMedia";
+
+import { ReactSession } from "react-client-session";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
-import Container from "@mui/material/Container";
-import PropTypes from "prop-types";
-import { styled } from "@mui/material/styles";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import TextField from "@mui/material/TextField";
-import DialogContentText from "@mui/material/DialogContentText";
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
 
+import Rating from "@mui/material/Rating";
+import Snackbar from "@mui/material/Snackbar";
+import TextField from "@mui/material/TextField";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import InputLabel from "@mui/material/InputLabel";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import MuiAlert from "@mui/material/Alert";
+
 export function Users() {
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const [open, setOpen] = React.useState(false);
-  const token = ReactSession.get("token");
-  const [users, setUsers] = useState({});
-  console.log(token);
-
-  useEffect(() => {
-    fetch("http://localhost:4000/users", {
-      method: "GET",
-      headers: new Headers({
-        Authorization: "Bearer " + token,
-        "Content-Type": "application/json; charset=UTF-8",
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data)
-        setUsers(data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-
-  return (
-    <div className="area">
-      <ChangePassword open={open} setOpen={setOpen} />
-      {/* {users.map((user)=> (<><Card sx={{ display: "flex", minWidth: 300, maxWidth: 500 }} variant="outlined">
-        <CardMedia
-          component="img"
-          sx={{ maxWidth: 150, minHeight: 150 }}
-          image={user.image}
-          alt="Live from space album cover"
-        />
-        <div style={{ textAlign: "left", height: "100" }}>
-          <CardContent>
-            <Typography component="div" variant="h5">
-              <b>{user.name}</b>
-            </Typography>
-            <Typography
-              variant="subtitle1"
-              color="text.secondary"
-              component="div"
-            >
-              <b>{user.role}</b>
-            </Typography>
-            <Divider>
-              <Chip label="UID" />
-            </Divider>
-            <br/>
-            <Typography variant="h6" component="div" gutterBottom>
-              {user.uid}
-            </Typography>
-            <br/>
-            <Divider>
-              <Chip label="AGE" />
-            </Divider>
-            <br/>
-            <Typography variant="h6" component="div" gutterBottom>
-              {user.age}
-            </Typography>
-            <br/>
-            <Divider>
-              <Chip label="PHONE NO." />
-            </Divider>
-            <br/>
-            <Typography variant="h6" component="div" gutterBottom>
-              {user.phone}
-            </Typography>
-            <br/>
-            <Divider>
-              <Chip label="EMAIL" />
-            </Divider>
-            <br/>
-            <Typography variant="h6" component="div" gutterBottom>
-              {user.email}
-            </Typography>
-          </CardContent>
-        </div>
-      </Card>
-      </>
-      ))} */}
-      <Fab
-          color="primary"
-          aria-label="add"
-          style={{ position: "fixed", right: "20px", bottom: "20px" }}
-          size="large"
-          onClick={() => {
-            setOpen(true);
-          }}
-        >
-          <AddIcon />
-        </Fab>
-    </div>
-  );
-}
-
-
-function ChangePassword({ open, setOpen }) {
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleSubmit = () => {
-    fetch("http://localhost:4000/users", {
-      method: "POST",
-      body: JSON.stringify({
-        name: name,
-        email: email,
-        age: age,
-        phone: phone,
-        uid: uid,
-        role: role,
-        password: password
-      }),
-      headers: new Headers({
-        "Content-Type": "application/json; charset=UTF-8"
-      })
-    }).catch((err) => {
-      console.log(err);
-    });
-
-    // setOpen(false);
-  };
+  const [users, setUsers] = useState([]);
+  const [open, setopen] = useState(false);
+  const [type, setType] = useState("add");
+  const [id, setId] = useState("");
 
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -159,12 +40,209 @@ function ChangePassword({ open, setOpen }) {
   const [uid, setUid] = useState(0);
   const [phone, setPhone] = useState(0);
 
+  function updateUsers() {
+    fetch("http://localhost:4000/users", {
+      method: "GET",
+      headers: new Headers({
+        Authorization: "Bearer " + ReactSession.get("token"),
+        "Content-Type": "application/json; charset=UTF-8",
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setUsers(data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  useEffect(() => {
+    updateUsers();
+  }, []);
+
+  async function handleAdd() {
+    // setopen(!open);
+
+    fetch("http://localhost:4000/users", {
+      method: "POST",
+      headers: new Headers({
+        "Content-Type": "application/json; charset=UTF-8",
+      }),
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        age: age,
+        phone: phone,
+        uid: uid,
+        role: role,
+        password: password,
+      }),
+    }).catch((err) => {
+      console.log(err);
+    });
+
+    updateUsers();
+  }
+
+  async function handleEdit() {
+    console.log(id);
+    //   // setSnackOpen(true);
+      setopen(!open);
+      await fetch(`http://localhost:4000/user/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          age: age,
+          phone: phone,
+          uid: uid,
+          role: role,
+          password: password,
+        }),
+        headers: {
+          Authorization: "Bearer " + ReactSession.get("token"),
+          "Content-Type": "application/json; charset=UTF-8",
+        },
+      });
+
+    updateUsers();
+  }
+
+  async function handleDelete(id) {
+    await fetch(`http://localhost:4000/users/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + ReactSession.get("token"),
+        "Content-Type": "application/json; charset=UTF-8",
+      },
+    });
+    updateUsers();
+  }
+
   return (
-    <div>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add User</DialogTitle>
+    <div className="area users-area">
+      {users.map((user) => (
+        <Card sx={{ minWidth: 450, maxWidth: "45%" }} raised="true">
+          <CardContent>
+            <div style={{ display: "flex", minWidth: 300, }} variant="outlined" >
+              <CardMedia
+                component="img"
+                sx={{ maxWidth: 200, minHeight: 150 }}
+                image={user.image}
+                alt="Live from space album cover"
+              />
+              <div style={{ textAlign: "left", height: "100" }}>
+                <CardContent>
+                  <Typography component="div" variant="h5">
+                    <b>{user.name}</b>
+                  </Typography>
+                  <Typography
+                    variant="subtitle1"
+                    color="text.secondary"
+                    component="div"
+                  >
+                    <b>{user.role}</b>
+                  </Typography>
+                </CardContent>
+              </div>
+            </div>
+              <Typography
+                component="div"
+                variant="h5"
+                style={{ margin: "10px" }}
+              >
+                Profile Details
+              </Typography>
+              <div>
+                <CardContent>
+                  <Divider>
+                    <Chip label="UID" />
+                  </Divider>
+                  <br />
+                  <Typography variant="h6" component="div" gutterBottom>
+                    {user.uid}
+                  </Typography>
+                  <br />
+                  <Divider>
+                    <Chip label="AGE" />
+                  </Divider>
+                  <br />
+                  <Typography variant="h6" component="div" gutterBottom>
+                    {user.age}
+                  </Typography>
+                  <br />
+                  <Divider>
+                    <Chip label="PHONE NO." />
+                  </Divider>
+                  <br />
+                  <Typography variant="h6" component="div" gutterBottom>
+                    {user.phone}
+                  </Typography>
+                  <br />
+                  <Divider>
+                    <Chip label="EMAIL" />
+                  </Divider>
+                  <br />
+                  <Typography variant="h6" component="div" gutterBottom>
+                    {user.email}
+                  </Typography>
+                </CardContent>
+              </div>
+          </CardContent>
+          {ReactSession.get("type") === "student" ? (
+            <></>
+          ) : (
+            <CardActions>
+              <IconButton
+                color="warning"
+                onClick={() => {
+                  setId(user._id);
+                  setType("edit");
+                  setopen(true);
+                }}
+              >
+                <EditIcon />
+              </IconButton>
+              <IconButton
+                color="warning"
+                onClick={() => {
+                  handleDelete(user._id);
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </CardActions>
+          )}
+        </Card>
+      ))}
+      {ReactSession.get("type") === "student" ? (
+        <></>
+      ) : (
+        <Fab
+          color="primary"
+          aria-label="add"
+          style={{ position: "fixed", right: "20px", bottom: "20px" }}
+          size="large"
+          onClick={() => {
+            setType("add");
+            setopen(true);
+          }}
+        >
+          <AddIcon />
+        </Fab>
+      )}
+      <Dialog open={open} onClose={() => setopen(false)}>
+        <DialogTitle>
+          {type === "add" ? "Add Notice" : "Edit Notice"}
+        </DialogTitle>
         <DialogContent>
-          <DialogContentText>Change your Login Password here</DialogContentText>
+          <DialogContentText>
+            To {type === "add" ? "Add " : "Edit "}Notice in the Notice List
+            please fill the below details
+            {<br />}
+            It is cumpulsory to fill all fields else form doesn't get submitted
+          </DialogContentText>
           <TextField
             required
             variant="filled"
@@ -186,7 +264,7 @@ function ChangePassword({ open, setOpen }) {
             type="email"
             fullWidth
           />
-           <TextField
+          <TextField
             required
             variant="filled"
             margin="dense"
@@ -242,8 +320,22 @@ function ChangePassword({ open, setOpen }) {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>ADD</Button>
+          <Button onClick={() => setopen(false)}>Cancel</Button>
+          <Button
+            onClick={type === "add" ? handleAdd : handleEdit}
+            type="submit"
+            disabled={
+              name === "" ||
+              email === "" ||
+              password === "" ||
+              role === "" ||
+              phone === "" ||
+              age === "" ||
+              uid === ""
+            }
+          >
+            Submit
+          </Button>
         </DialogActions>
       </Dialog>
     </div>
