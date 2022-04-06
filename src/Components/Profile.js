@@ -21,13 +21,25 @@ import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
 
 export function Profile() {
-  const handleClickOpen = () => {
+  const handleReset = () => {
+    setDialogType("passwordReset")
+    setOpen(true);
+  };
+
+  const handleAttendance = () => {
+    setDialogType("markAttendance")
+    setOpen(true);
+  };
+
+  const handleAssignment = () => {
+    setDialogType("sumit Assignment")
     setOpen(true);
   };
 
   const [open, setOpen] = React.useState(false);
   const token = ReactSession.get("token");
   const [user, setUser] = useState({});
+  const [dialogType, setDialogType] = useState("");
   console.log(token);
 
   useEffect(() => {
@@ -51,7 +63,7 @@ export function Profile() {
 
   return (
     <div className="profile area">
-      <ChangePassword open={open} setOpen={setOpen} />
+      {dialogType === "passwordReset" ?  <ChangePassword open={open} setOpen={setOpen} /> : <></>}
       <Card sx={{ display: "flex", minWidth: 300 }} variant="outlined">
         <CardMedia
           component="img"
@@ -123,7 +135,7 @@ export function Profile() {
             <Button
               size="medium"
               variant="outlined"
-              onClick={handleClickOpen}
+              onClick={handleReset}
               fullWidth
               sx={{ maxWidth: 500 }}
             >
@@ -133,7 +145,7 @@ export function Profile() {
               <Button
                 size="medium"
                 variant="outlined"
-                onClick={handleClickOpen}
+                onClick={handleAttendance}
                 fullWidth
                 sx={{ maxWidth: 500 }}
               >
@@ -142,15 +154,19 @@ export function Profile() {
             ) : (
               <></>
             )}
-            <Button
-              size="medium"
-              variant="outlined"
-              onClick={handleClickOpen}
-              fullWidth
-              sx={{ maxWidth: 500 }}
-            >
-              Submit Assignment
-            </Button>
+            {ReactSession.get("type") === "student" ? (
+              <Button
+                size="medium"
+                variant="outlined"
+                onClick={handleAssignment}
+                fullWidth
+                sx={{ maxWidth: 500 }}
+              >
+                Submit Assignment
+              </Button>
+            ) : (
+              <></>
+            )}
           </div>
         </CardActions>
       </Card>
