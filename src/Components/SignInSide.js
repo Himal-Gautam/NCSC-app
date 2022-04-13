@@ -16,6 +16,7 @@ import { ReactSession } from "react-client-session";
 import { useNavigate, Route, Redirect } from "react-router-dom";
 import {TokenContext} from "../App"
 import { useContext } from "react";
+import { API } from "../global.js"
 
 
 function Copyright(props) {
@@ -47,7 +48,8 @@ export function SignInSide() {
     const data = new FormData(event.currentTarget);
 
     if (data.get("uid") !== "" && data.get("password") !== "") {
-      await fetch("http://localhost:4000/users/login", {
+      await fetch(`${API}/users/login`, {
+      // await fetch("http://localhost:4000/users/login", {
         method: "POST",
         body: JSON.stringify({
           uid: data.get("uid"),

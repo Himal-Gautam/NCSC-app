@@ -116,7 +116,7 @@ export function Notices() {
                 {notice.title}
               </Typography>
               <Typography variant="body2">{notice.description}</Typography>
-              <Typography color="text.secondary">{notice.owner}</Typography>
+              <Typography color="text.secondary">{notice.owner_info.name}</Typography>
               <Typography color="text.secondary">{notice.updatedAt.split("T")[0].split("-").reverse().join("-") + " " + notice.updatedAt.split("T")[1].slice(0,5)}</Typography>
             </div>
           </CardContent>

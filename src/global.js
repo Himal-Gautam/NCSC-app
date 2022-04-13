@@ -1,0 +1,1 @@
+export const API = "https://ncsc-server.herokuapp.com"
