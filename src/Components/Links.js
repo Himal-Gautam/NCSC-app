@@ -12,18 +12,18 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
 import { useState, useEffect } from "react";
 import { Navbar, Container, Nav } from "react-bootstrap";
-import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
-import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import List from "@mui/material/List";
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import SchoolIcon from '@mui/icons-material/School'
+import SchoolIcon from "@mui/icons-material/School";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/Inbox";
 import DraftsIcon from "@mui/icons-material/Drafts";
-import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
+import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import Divider from "@mui/material/Divider";
 
 export function Links() {
@@ -48,7 +48,7 @@ export function Links() {
       name: "student portal",
       link: "https://vnsgu.net/",
     },
-  ]
+  ];
 
   return (
     <div className="area">
@@ -60,11 +60,23 @@ export function Links() {
                 <ListItem disablePadding="true">
                   <ListItemButton>
                     <ListItemIcon>
-                    {index === 0 ? <SchoolIcon color="primary" /> : <></>}
-                  {index === 1 ? <AccountBalanceIcon color="primary" /> : <></>}
-                  {index === 2 ? <LibraryBooksIcon color="primary" /> : <></>}
-                  {index === 3 ? <CurrencyRupeeIcon color="primary" /> : <></>}
-                  {index === 4 ? <PeopleAltIcon color="primary" /> : <></>}
+                      {index === 0 ? <SchoolIcon color="primary" /> : <></>}
+                      {index === 1 ? (
+                        <AccountBalanceIcon color="primary" />
+                      ) : (
+                        <></>
+                      )}
+                      {index === 2 ? (
+                        <LibraryBooksIcon color="primary" />
+                      ) : (
+                        <></>
+                      )}
+                      {index === 3 ? (
+                        <CurrencyRupeeIcon color="primary" />
+                      ) : (
+                        <></>
+                      )}
+                      {index === 4 ? <PeopleAltIcon color="primary" /> : <></>}
                     </ListItemIcon>
                     <ListItemText
                       primary={item.name.toUpperCase()}

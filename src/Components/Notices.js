@@ -22,6 +22,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import MuiAlert from "@mui/material/Alert";
+import {API} from "../global.js";
 
 export function Notices() {
   const [notices, setNotices] = useState([]);
@@ -32,7 +33,7 @@ export function Notices() {
   const [description, setDescription] = useState("");
 
   function updateNotices() {
-    fetch("http://localhost:4000/notices", {
+    fetch(`${API}/notices`, {
       method: "GET",
       headers: new Headers({
         Authorization: "Bearer " + ReactSession.get("token"),
@@ -57,7 +58,7 @@ export function Notices() {
       // setSnackOpen(true);
       setopen(!open);
 
-      await fetch(`http://localhost:4000/notices`, {
+      await fetch(`${API}/notices`, {
         method: "POST",
         body: JSON.stringify({
           title: title,
@@ -78,7 +79,7 @@ export function Notices() {
     if (title !== "" && description !== "") {
       // setSnackOpen(true);
       setopen(!open);
-      await fetch(`http://localhost:4000/notices/${id}`, {
+      await fetch(`${API}/notices/${id}`, {
         method: "PATCH",
         body: JSON.stringify({
           title: title,
@@ -95,7 +96,7 @@ export function Notices() {
   }
 
   async function handleDelete(id) {
-      await fetch(`http://localhost:4000/notices/${id}`, {
+      await fetch(`${API}/notices/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: "Bearer " + ReactSession.get("token"),

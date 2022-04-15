@@ -26,7 +26,7 @@ import LinkIcon from "@mui/icons-material/Link";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Zoom from "@mui/material/Zoom";
 import Tooltip from "@mui/material/Tooltip";
-
+import {API} from "../global.js"
 const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
@@ -114,7 +114,7 @@ function NavBar_() {
   };
 
   const handleLogout = async () => {
-    await fetch("http://localhost:4000/users/logout", {
+    await fetch(`${API}/users/logout`, {
       method: "POST",
       headers: new Headers({
         Authorization: "Bearer " + ReactSession.get("token"),
@@ -132,7 +132,7 @@ function NavBar_() {
   };
 
   const handleLogoutAll = async () => {
-    await fetch("http://localhost:4000/users/logoutAll", {
+    await fetch(`${API}/users/logoutAll`, {
       method: "POST",
       headers: new Headers({
         Authorization: "Bearer " + ReactSession.get("token"),

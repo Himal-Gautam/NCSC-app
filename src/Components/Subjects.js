@@ -23,6 +23,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import MuiAlert from "@mui/material/Alert";
+import { API } from "../global.js"
 
 export function Subjects() {
   const [subjects, setSubjects] = useState([]);
@@ -34,7 +35,7 @@ export function Subjects() {
   const [tid, setTid] = useState(0);
 
   function updateSubjects() {
-    fetch("http://localhost:4000/subjects", {
+    fetch(`${API}/subjects`, {
       method: "GET",
       headers: new Headers({
         Authorization: "Bearer " + ReactSession.get("token"),
@@ -58,7 +59,7 @@ export function Subjects() {
     // setSnackOpen(true);
     setopen(!open);
 
-    await fetch(`http://localhost:4000/subjects`, {
+    await fetch(`${API}/subjects`, {
       method: "POST",
       body: JSON.stringify({
         name: name,
@@ -76,7 +77,7 @@ export function Subjects() {
 
   async function handleEdit() {
     setopen(!open);
-    await fetch(`http://localhost:4000/subjects/${id}`, {
+    await fetch(`${API}/subjects/${id}`, {
       method: "PATCH",
       body: JSON.stringify({
         name: name,
@@ -93,7 +94,7 @@ export function Subjects() {
   }
 
   async function handleDelete(id) {
-    await fetch(`http://localhost:4000/subjects/${id}`, {
+    await fetch(`${API}/subjects/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: "Bearer " + ReactSession.get("token"),

@@ -23,6 +23,8 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import { API } from "../global.js"
+
 export function Profile() {
   const handleReset = () => {
     setDialogType("passwordReset");
@@ -51,7 +53,7 @@ export function Profile() {
   console.log(token);
 
   useEffect(() => {
-    fetch("http://localhost:4000/users/me", {
+    fetch(`${API}/users/me`, {
       method: "GET",
       headers: new Headers({
         Authorization: "Bearer " + token,
@@ -220,7 +222,7 @@ function ChangePassword({ open, setOpen }) {
   };
 
   const handleSubmit = () => {
-    fetch("http://localhost:4000/users/me", {
+    fetch(`${API}/users/me`, {
       method: "PATCH",
       body: JSON.stringify({
         password: newPassword,
@@ -300,7 +302,7 @@ function Attendance({ open, setOpen }) {
   };
 
   function updateSubjects() {
-    fetch("http://localhost:4000/subjects", {
+    fetch(`${API}/subjects`, {
       method: "GET",
       headers: new Headers({
         Authorization: "Bearer " + ReactSession.get("token"),
@@ -321,7 +323,7 @@ function Attendance({ open, setOpen }) {
   }, []);
 
   const handleSubmit = () => {
-    fetch("http://localhost:4000/attendance", {
+    fetch(`${API}/attendance`, {
       method: "POST",
       body: JSON.stringify({
         subjectName: choice,
@@ -385,7 +387,7 @@ function SubmitAssignment({ open, setOpen }) {
   };
 
   function updateSubjects() {
-    fetch("http://localhost:4000/subjects", {
+    fetch(`${API}/subjects`, {
       method: "GET",
       headers: new Headers({
         Authorization: "Bearer " + ReactSession.get("token"),
@@ -406,7 +408,7 @@ function SubmitAssignment({ open, setOpen }) {
   }, []);
 
   const handleSubmit = () => {
-    fetch("http://localhost:4000/attendance", {
+    fetch(`${API}/attendance`, {
       method: "POST",
       body: JSON.stringify({
         subjectName: choice,
@@ -513,7 +515,7 @@ function CreateAssignment({ open, setOpen }) {
   };
 
   function updateSubjects() {
-    fetch("http://localhost:4000/subjects", {
+    fetch(`${API}/subjects`, {
       method: "GET",
       headers: new Headers({
         Authorization: "Bearer " + ReactSession.get("token"),
@@ -534,7 +536,7 @@ function CreateAssignment({ open, setOpen }) {
   }, []);
 
   const handleSubmit = () => {
-    fetch("http://localhost:4000/attendance", {
+    fetch(`${API}/attendance`, {
       method: "POST",
       body: JSON.stringify({
         subjectName: choice,
