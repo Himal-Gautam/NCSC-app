@@ -13,16 +13,12 @@ import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
-import Rating from "@mui/material/Rating";
-import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
-import InputLabel from "@mui/material/InputLabel";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import MuiAlert from "@mui/material/Alert";
 import { API } from "../global.js"
 
 export function Subjects() {

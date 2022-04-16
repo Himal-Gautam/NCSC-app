@@ -12,10 +12,11 @@ import {
   Route,
   Routes,
   Navigate,
-  BrowserRouter as Router,
 } from "react-router-dom";
 import { SignInSide } from "./Components/SignInSide";
 import { Subjects } from "./Components/Subjects";
+import { Assignments } from "./Components/Assignments";
+
 
 ReactSession.setStoreType("localstorage");
 
@@ -34,6 +35,7 @@ function App() {
           <Route path="notices" element={<Notices />} />
           <Route path="users" element={<Users />} />
           <Route path="subjects" element={<Subjects />} />
+          <Route path="assignments" element={<Assignments />} />
         </Route>
         {/* <Route path="**" element={<Navigate replace to="/pageNotFound" />} exact /> */}
         {/* <Route path="**" element={<NotFoundPage />} /> */}

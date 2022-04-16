@@ -10,24 +10,30 @@ import IconButton from "@mui/material/IconButton";
 import { ReactSession } from "react-client-session";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
+import InputLabel from "@mui/material/InputLabel";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import {API} from "../global.js";
 
-export function Notices() {
-  const [notices, setNotices] = useState([]);
+export function Assignments() {
+  const [assignments, setAssignments] = useState([]);
   const [open, setopen] = useState(false);
   const [type, setType] = useState("add");
   const [id, setId] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [subjects, setSubjects] = useState([]);
+  const [choice, setChoice] = useState([]);
 
-  function updateNotices() {
-    fetch(`${API}/notices`, {
+  function updateSubjects() {
+    fetch(`${API}/subjects`, {
       method: "GET",
       headers: new Headers({
         Authorization: "Bearer " + ReactSession.get("token"),
@@ -36,7 +42,24 @@ export function Notices() {
     })
       .then((response) => response.json())
       .then((data) => {
-        setNotices(data);
+        setSubjects(data.map((subject) => subject.name));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  function updateAssignments() {
+    fetch(`${API}/assignments`, {
+      method: "GET",
+      headers: new Headers({
+        Authorization: "Bearer " + ReactSession.get("token"),
+        "Content-Type": "application/json; charset=UTF-8",
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setAssignments(data);
       })
       .catch((err) => {
         console.log(err);
@@ -44,19 +67,23 @@ export function Notices() {
   }
 
   useEffect(() => {
-    updateNotices();
+    updateAssignments();
+    updateSubjects();
   }, []);
 
+
+  
   async function handleAdd() {
     if (title !== "" && description !== "") {
       // setSnackOpen(true);
       setopen(!open);
 
-      await fetch(`${API}/notices`, {
+      await fetch(`${API}/assignments`, {
         method: "POST",
         body: JSON.stringify({
           title: title,
           description: description,
+          subject: choice
         }),
         headers: {
           Authorization: "Bearer " + ReactSession.get("token"),
@@ -64,9 +91,13 @@ export function Notices() {
         },
       });
 
-      updateNotices();
+      updateAssignments();
     }
   }
+
+  const handleChange = (event) => {
+    setChoice(event.target.value);
+  };
 
   async function handleEdit() {
     console.log(id, title, description)
@@ -85,7 +116,7 @@ export function Notices() {
         },
       });
 
-      updateNotices();
+      updateAssignments();
     }
   }
 
@@ -97,22 +128,23 @@ export function Notices() {
           "Content-Type": "application/json; charset=UTF-8",
         },
       });
-      updateNotices();
+      updateAssignments();
     
   }
 
   return (
     <div className="area notices-area">
-      {notices.reverse().map((notice) => (
+      {assignments.reverse().map((assignment) => (
         <Card sx={{ minWidth: 200 }}>
           <CardContent>
             <div className="content">
               <Typography variant="h5" component="div">
-                {notice.title}
+                {assignment.title}
               </Typography>
-              <Typography variant="body1">{notice.description}</Typography>
-              <Typography color="text.secondary">{notice.owner_info.name}</Typography>
-              <Typography color="text.secondary">{notice.updatedAt.split("T")[0].split("-").reverse().join("-") + " " + notice.updatedAt.split("T")[1].slice(0,5)}</Typography>
+              <Typography variant="body1">{assignment.description}</Typography>
+              <Typography color="text.secondary">{assignment.teacher.name}</Typography>
+              <Typography color="text.secondary">{assignment.subject.name}</Typography>
+              <Typography color="text.secondary">{assignment.updatedAt.split("T")[0].split("-").reverse().join("-") + " " + assignment.updatedAt.split("T")[1].slice(0,5)}</Typography>
             </div>
           </CardContent>
           {ReactSession.get("type") === "student" ? (
@@ -122,7 +154,7 @@ export function Notices() {
                <IconButton
                 color="warning"
                 onClick={()=>{
-                  setId(notice._id);
+                  setId(assignment._id);
                   setType("edit");
                   setopen(true);}
                 }
@@ -132,8 +164,8 @@ export function Notices() {
               <IconButton
                 color="warning"
                 onClick={()=>{
-                  setId(notice._id);
-                  handleDelete(notice._id)}
+                  setId(assignment._id);
+                  handleDelete(assignment._id)}
                 }
               >
                 <DeleteIcon />
@@ -151,7 +183,7 @@ export function Notices() {
           style={{ position: "fixed", right: "20px", bottom: "20px" }}
           size="large"
           onClick={() => {
-            setType("add");
+            setType("give");
             setopen(true);
           }}
         >
@@ -160,11 +192,11 @@ export function Notices() {
       )}
       <Dialog open={open} onClose={() => setopen(false)}>
         <DialogTitle>
-          {type === "add" ? "Add Notice" : "Edit Notice"}
+          {type === "give" ? "Give " : "Edit "}Assignment
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            To {type === "add" ? "Add " : "Edit "}Notice in the Notice List
+            To {type === "give" ? "Give " : "Edit "}Assignment in the Assignments List
             please fill the below details
             {<br />}
             It is cumpulsory to fill all fields else form doesn't get submitted
@@ -190,6 +222,22 @@ export function Notices() {
             onChange={(event) => setDescription(event.target.value)}
             required
           />
+          <FormControl fullWidth sx={{ mt: 2 }}>
+            <InputLabel id="demo-simple-select-label">Subject</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={choice}
+              label="Choose Subject"
+              onChange={handleChange}
+              fullWidth
+            >
+              <MenuItem value="">Select</MenuItem>
+              {subjects.map((subject) => (
+                <MenuItem value={subject}>{subject}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setopen(false)}>Cancel</Button>

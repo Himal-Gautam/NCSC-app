@@ -26,6 +26,7 @@ import LinkIcon from "@mui/icons-material/Link";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Zoom from "@mui/material/Zoom";
 import Tooltip from "@mui/material/Tooltip";
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import {API} from "../global.js"
 const drawerWidth = 240;
 
@@ -183,7 +184,7 @@ function NavBar_() {
         </DrawerHeader>
         <Divider />
         <List>
-          {["profile", "academics", "notices", "links"].map((text, index) => (
+          {["profile", "academics", "assignments", "notices", "links"].map((text, index) => (
             <ListItemButton
               key={text}
               sx={{
@@ -212,8 +213,10 @@ function NavBar_() {
                 >
                   {index === 0 ? <PersonIcon color="primary" /> : <></>}
                   {index === 1 ? <MenuBookIcon color="primary" /> : <></>}
-                  {index === 2 ? <FeedbackIcon color="primary" /> : <></>}
-                  {index === 3 ? <LinkIcon color="primary" /> : <></>}
+                  {index === 2 ? <AssignmentIcon color="primary" /> : <></>}
+                  {index === 3 ? <FeedbackIcon color="primary" /> : <></>}
+                  {index === 4 ? <LinkIcon color="primary" /> : <></>}
+                  
                 </ListItemIcon>
               </Tooltip>
               <ListItemText

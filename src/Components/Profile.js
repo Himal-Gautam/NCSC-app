@@ -6,15 +6,10 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import React, { useState, useEffect } from "react";
 import CardActions from "@mui/material/CardActions";
-import Container from "@mui/material/Container";
-import PropTypes from "prop-types";
-import { styled } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
 import TextField from "@mui/material/TextField";
 import DialogContentText from "@mui/material/DialogContentText";
 import Divider from "@mui/material/Divider";
@@ -47,16 +42,15 @@ export function Profile() {
   };
 
   const [open, setOpen] = React.useState(false);
-  const token = ReactSession.get("token");
   const [user, setUser] = useState({});
   const [dialogType, setDialogType] = useState("");
-  console.log(token);
+
 
   useEffect(() => {
     fetch(`${API}/users/me`, {
       method: "GET",
       headers: new Headers({
-        Authorization: "Bearer " + token,
+        Authorization: "Bearer " + ReactSession.get("token"),
         "Content-Type": "application/json; charset=UTF-8",
       }),
     })
