@@ -59,6 +59,7 @@ export function Profile() {
         data.name = data.name.toUpperCase();
         data.role = data.role.toUpperCase();
         setUser(data);
+        ReactSession.set("uid", data.uid);
       })
       .catch((err) => {
         console.log(err);
@@ -234,7 +235,6 @@ function ChangePassword({ open, setOpen }) {
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [oldPassword, setOldPassword] = useState("  ");
 
   return (
     <div>
@@ -245,19 +245,6 @@ function ChangePassword({ open, setOpen }) {
           <TextField
             required
             variant="filled"
-            autoFocus
-            margin="dense"
-            id="old_password"
-            label="Old Password"
-            onChange={(e) => setOldPassword(e.target.value)}
-            type="password"
-            fullWidth
-          />
-          <TextField
-            error={oldPassword === newPassword}
-            helperText="Old Password and New Password can't be same"
-            required
-            variant="filled"
             margin="dense"
             id="new_password"
             label="New Password"
@@ -266,7 +253,7 @@ function ChangePassword({ open, setOpen }) {
             fullWidth
           />
           <TextField
-            error={confirmPassword === newPassword ? false : true}
+            error={confirmPassword !== newPassword }
             helperText="Confirm New Password and New Password should be same"
             required
             variant="filled"

@@ -184,7 +184,7 @@ function NavBar_() {
         </DrawerHeader>
         <Divider />
         <List>
-          {["profile", "academics", "assignments", "notices", "links"].map((text, index) => (
+          {["profile", "assignments", "notices", "links"].map((text, index) => (
             <ListItemButton
               key={text}
               sx={{
@@ -212,10 +212,10 @@ function NavBar_() {
                   }}
                 >
                   {index === 0 ? <PersonIcon color="primary" /> : <></>}
-                  {index === 1 ? <MenuBookIcon color="primary" /> : <></>}
-                  {index === 2 ? <AssignmentIcon color="primary" /> : <></>}
-                  {index === 3 ? <FeedbackIcon color="primary" /> : <></>}
-                  {index === 4 ? <LinkIcon color="primary" /> : <></>}
+                  {/* {index === 1 ? <MenuBookIcon color="primary" /> : <></>} */}
+                  {index === 1 ? <AssignmentIcon color="primary" /> : <></>}
+                  {index === 2 ? <FeedbackIcon color="primary" /> : <></>}
+                  {index === 3 ? <LinkIcon color="primary" /> : <></>}
                   
                 </ListItemIcon>
               </Tooltip>
@@ -271,68 +271,6 @@ function NavBar_() {
                   </ListItemButton>
                 )
               )}
-              {/* <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }}
-                onClick={() => {
-                  let link = "/dashboard/users";
-                  navigate(link);
-                }}
-              >
-                <Tooltip
-                  arrow={true}
-                  size="large"
-                  TransitionComponent={Zoom}
-                  title="users"
-                  placement="right"
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : "auto",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <PeopleAltIcon color="primary" />
-                  </ListItemIcon>
-                </Tooltip>
-
-                <ListItemText primary="LOGOUT" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }}
-                onClick={() => {
-                  let link = "/dashboard/subjects";
-                  navigate(link);
-                }}
-              >
-                <Tooltip
-                  arrow={true}
-                  size="large"
-                  TransitionComponent={Zoom}
-                  title="subjects"
-                  placement="right"
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : "auto",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <SubjectIcon color="primary" />
-                  </ListItemIcon>
-                </Tooltip>
-
-                <ListItemText primary="LOGOUT" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton> */}
             </List>
           </>
         ) : (

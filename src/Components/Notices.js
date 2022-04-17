@@ -16,13 +16,13 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import {API} from "../global.js";
+import { API } from "../global.js";
 
 export function Notices() {
   const [notices, setNotices] = useState([]);
+  const [notice, setNotice] = useState({});
   const [open, setopen] = useState(false);
   const [type, setType] = useState("add");
-  const [id, setId] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
@@ -36,7 +36,7 @@ export function Notices() {
     })
       .then((response) => response.json())
       .then((data) => {
-        setNotices(data);
+        setNotices(data.reverse());
       })
       .catch((err) => {
         console.log(err);
@@ -69,11 +69,11 @@ export function Notices() {
   }
 
   async function handleEdit() {
-    console.log(id, title, description)
+    console.log(notice._id, title, description);
     if (title !== "" && description !== "") {
       // setSnackOpen(true);
       setopen(!open);
-      await fetch(`${API}/notices/${id}`, {
+      await fetch(`${API}/notices/${notice._id}`, {
         method: "PATCH",
         body: JSON.stringify({
           title: title,
@@ -89,21 +89,21 @@ export function Notices() {
     }
   }
 
-  async function handleDelete(id) {
-      await fetch(`${API}/notices/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: "Bearer " + ReactSession.get("token"),
-          "Content-Type": "application/json; charset=UTF-8",
-        },
-      });
-      updateNotices();
-    
+  async function handleDelete() {
+    await fetch(`${API}/notices/${notice._id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + ReactSession.get("token"),
+        "Content-Type": "application/json; charset=UTF-8",
+      },
+    });
+    updateNotices();
   }
 
   return (
     <div className="area notices-area">
-      {notices.reverse().map((notice) => (
+     
+      {notices.map((notice) => (
         <Card sx={{ minWidth: 200 }}>
           <CardContent>
             <div className="content">
@@ -111,34 +111,41 @@ export function Notices() {
                 {notice.title}
               </Typography>
               <Typography variant="body1">{notice.description}</Typography>
-              <Typography color="text.secondary">{notice.owner_info.name}</Typography>
-              <Typography color="text.secondary">{notice.updatedAt.split("T")[0].split("-").reverse().join("-") + " " + notice.updatedAt.split("T")[1].slice(0,5)}</Typography>
+              <Typography color="text.secondary">
+                {notice.owner_info.name}
+              </Typography>
+              <Typography color="text.secondary">
+                {notice.updatedAt.split("T")[0].split("-").reverse().join("-") +
+                  " " +
+                  notice.updatedAt.split("T")[1].slice(0, 5)}
+              </Typography>
             </div>
           </CardContent>
-          {ReactSession.get("type") === "student" ? (
-            <></>
-          ) : (
+          {ReactSession.get("type") === "admin" ||
+          ReactSession.get("uid") === notice.owner_info.uid ? (
             <CardActions>
-               <IconButton
-                color="warning"
-                onClick={()=>{
-                  setId(notice._id);
+              <IconButton
+                color="info"
+                onClick={() => {
+                  setNotice(notice);
                   setType("edit");
-                  setopen(true);}
-                }
+                  setopen(true);
+                }}
               >
                 <EditIcon />
               </IconButton>
               <IconButton
-                color="warning"
-                onClick={()=>{
-                  setId(notice._id);
-                  handleDelete(notice._id)}
-                }
+                color="error"
+                onClick={() => {
+                  setNotice(notice);
+                  handleDelete();
+                }}
               >
                 <DeleteIcon />
               </IconButton>
             </CardActions>
+          ) : (
+            <></>
           )}
         </Card>
       ))}
@@ -179,6 +186,7 @@ export function Notices() {
             variant="filled"
             onChange={(event) => setTitle(event.target.value)}
             required
+            defaultValue={type === "edit" ? notice.title : ""}
           />
           <TextField
             margin="dense"
@@ -189,6 +197,7 @@ export function Notices() {
             variant="filled"
             onChange={(event) => setDescription(event.target.value)}
             required
+            defaultValue={type === "edit" ? notice.description : ""}
           />
         </DialogContent>
         <DialogActions>

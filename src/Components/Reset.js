@@ -13,6 +13,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
+import CardMedia from "@mui/material/CardMedia";
 
 function Copyright(props) {
   return (
@@ -97,6 +98,12 @@ export function Reset() {
             alignItems: "center",
           }}
         >
+          <CardMedia
+            component="img"
+            height="150"
+            image="https://us.123rf.com/450wm/jirsak/jirsak1707/jirsak170700007/82255755-cybersecurity-and-information-technology-security-services-concept-login-or-sign-in-internet-concept.jpg?ver=6"
+            alt="login"
+          />
           <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
             <LockOutlinedIcon />
           </Avatar>
@@ -162,6 +169,15 @@ export function Reset() {
             >
               {!success ? "Get-Otp" : "Reset"}
             </Button>
+            <Button
+              fullWidth
+              sx={{ mb: 2 }}
+              color="primary"
+              onClick={()=>{navigate("/login")}}
+            >
+              Back to login
+            </Button>
+            
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />

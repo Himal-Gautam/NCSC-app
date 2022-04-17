@@ -7,7 +7,8 @@ import Typography from "@mui/material/Typography";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
-
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 import { ReactSession } from "react-client-session";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
@@ -20,15 +21,17 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { API } from "../global.js"
-
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
 export function Subjects() {
   const [subjects, setSubjects] = useState([]);
   const [open, setopen] = useState(false);
   const [type, setType] = useState("add");
-  const [id, setId] = useState("");
+  const [subject, setSubject] = useState({});
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [tid, setTid] = useState(0);
+  const [users, setUsers] = useState([]);
 
   function updateSubjects() {
     fetch(`${API}/subjects`, {
@@ -51,10 +54,26 @@ export function Subjects() {
     updateSubjects();
   }, []);
 
+  function updateUsers() {
+    fetch("http://localhost:4000/users", {
+      method: "GET",
+      headers: new Headers({
+        Authorization: "Bearer " + ReactSession.get("token"),
+        "Content-Type": "application/json; charset=UTF-8",
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setUsers(data.filter((user) => user.role==="teacher"));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
   async function handleAdd() {
     // setSnackOpen(true);
     setopen(!open);
-
     await fetch(`${API}/subjects`, {
       method: "POST",
       body: JSON.stringify({
@@ -71,9 +90,10 @@ export function Subjects() {
     updateSubjects();
   }
 
+ 
   async function handleEdit() {
     setopen(!open);
-    await fetch(`${API}/subjects/${id}`, {
+    await fetch(`${API}/subjects/${subject._id}`, {
       method: "PATCH",
       body: JSON.stringify({
         name: name,
@@ -89,8 +109,8 @@ export function Subjects() {
     updateSubjects();
   }
 
-  async function handleDelete(id) {
-    await fetch(`${API}/subjects/${id}`, {
+  async function handleDelete() {
+    await fetch(`${API}/subjects/${subject._id}`, {
       method: "DELETE",
       headers: {
         Authorization: "Bearer " + ReactSession.get("token"),
@@ -122,11 +142,11 @@ export function Subjects() {
             </Typography>
             <br />
             <Divider>
-              <Chip label="SUBJECT TEACHER ID" />
+              <Chip label="SUBJECT TEACHER" />
             </Divider>
             <br />
             <Typography variant="h6" component="div" gutterBottom>
-              {subject.teacherId}
+              {subject.teacher.name}
             </Typography>
           </CardContent>
           {ReactSession.get("type") === "student" ? (
@@ -134,9 +154,11 @@ export function Subjects() {
           ) : (
             <CardActions>
               <IconButton
-                color="warning"
+                color="info"
                 onClick={() => {
-                  setId(subject._id);
+                  updateUsers()
+                  console.log(users)
+                  setSubject(subject);
                   setType("edit");
                   setopen(true);
                 }}
@@ -144,10 +166,10 @@ export function Subjects() {
                 <EditIcon />
               </IconButton>
               <IconButton
-                color="warning"
+                color="error"
                 onClick={() => {
-                  setId(subject._id);
-                  handleDelete(subject._id);
+                  setSubject(subject);
+                  handleDelete()
                 }}
               >
                 <DeleteIcon />
@@ -165,6 +187,7 @@ export function Subjects() {
           style={{ position: "fixed", right: "20px", bottom: "20px" }}
           size="large"
           onClick={() => {
+            updateUsers()
             setType("add");
             setopen(true);
           }}
@@ -174,7 +197,7 @@ export function Subjects() {
       )}
       <Dialog open={open} onClose={() => setopen(false)}>
         <DialogTitle>
-          {type === "add" ? "Add Notice" : "Edit Notice"}
+          {type === "add" ? "Add Subject" : "Edit Subject"}
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -190,30 +213,48 @@ export function Subjects() {
             label="Subject Name"
             type="text"
             fullWidth
-            variant="filled"
+            variant="outlined"
             onChange={(event) => setName(event.target.value)}
             required
+            defaultValue={type === "edit" ? subject.name : ""}
           />
           <TextField
             margin="dense"
-            id="description"
+            id="code"
             label="Subject Code"
             type="text"
             fullWidth
-            variant="filled"
+            variant="outlined"
             onChange={(event) => setCode(event.target.value)}
             required
+            defaultValue={type === "edit" ? subject.code : ""}
           />
-          <TextField
+          {/* <TextField
             margin="dense"
-            id="description"
+            id="teacherID"
             label="Subject Teacher Id"
             type="text"
             fullWidth
-            variant="filled"
+            variant="outlined"
             onChange={(event) => setTid(event.target.value)}
             required
-          />
+            defaultValue={type === "edit" ? subject.teacherId : ""}
+          /> */}
+          <FormControl fullWidth sx={{ mt: 2 }}>
+            <InputLabel id="demo-simple-select-label">Teacher</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              // value={tid}
+              label="Choose Teacher"
+              onChange={(event) => setTid(event.target.value)}
+              fullWidth
+            >
+              {users.map((user) => (
+                <MenuItem value={user._id}>{user.name}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setopen(false)}>Cancel</Button>

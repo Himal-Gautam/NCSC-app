@@ -26,13 +26,19 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import MuiAlert from "@mui/material/Alert";
 
+import Paper from "@mui/material/Paper";
+import InputBase from "@mui/material/InputBase";
+import MenuIcon from "@mui/icons-material/Menu";
+import SearchIcon from "@mui/icons-material/Search";
+import DirectionsIcon from "@mui/icons-material/Directions";
+
 export function Users() {
   const [users, setUsers] = useState([]);
   const [open, setopen] = useState(false);
   const [type, setType] = useState("add");
-  const [id, setId] = useState("");
+  const [user, setUser] = useState({});
 
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("********");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
@@ -86,31 +92,31 @@ export function Users() {
   }
 
   async function handleEdit() {
-    console.log(id);
+    console.log(user._id);
     //   // setSnackOpen(true);
-      setopen(!open);
-      await fetch(`http://localhost:4000/user/${id}`, {
-        method: "PATCH",
-        body: JSON.stringify({
-          name: name,
-          email: email,
-          age: age,
-          phone: phone,
-          uid: uid,
-          role: role,
-          password: password,
-        }),
-        headers: {
-          Authorization: "Bearer " + ReactSession.get("token"),
-          "Content-Type": "application/json; charset=UTF-8",
-        },
-      });
+    setopen(!open);
+    await fetch(`http://localhost:4000/user/${user._id}`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        age: age,
+        phone: phone,
+        uid: uid,
+        role: role,
+        password: password,
+      }),
+      headers: {
+        Authorization: "Bearer " + ReactSession.get("token"),
+        "Content-Type": "application/json; charset=UTF-8",
+      },
+    });
 
     updateUsers();
   }
 
-  async function handleDelete(id) {
-    await fetch(`http://localhost:4000/users/${id}`, {
+  async function handleDelete() {
+    await fetch(`http://localhost:4000/users/${user._id}`, {
       method: "DELETE",
       headers: {
         Authorization: "Bearer " + ReactSession.get("token"),
@@ -122,10 +128,29 @@ export function Users() {
 
   return (
     <div className="area users-area">
+      <Paper
+        component="form"
+        sx={{
+          p: "2px 4px",
+          display: "flex",
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
+        <InputBase
+          sx={{ ml: 1, flex: 1 }}
+          placeholder="Search Users"
+          inputProps={{ "aria-label": "search google maps" }}
+        />
+        <IconButton sx={{ p: "10px" }} aria-label="search">
+          <SearchIcon />
+        </IconButton>
+      </Paper>
+
       {users.map((user) => (
         <Card sx={{ minWidth: 450, maxWidth: "45%" }} raised="true">
           <CardContent>
-            <div style={{ display: "flex", minWidth: 300, }} variant="outlined" >
+            <div style={{ display: "flex", minWidth: 300 }} variant="outlined">
               <CardMedia
                 component="img"
                 sx={{ maxWidth: 200, minHeight: 150 }}
@@ -147,57 +172,53 @@ export function Users() {
                 </CardContent>
               </div>
             </div>
-              <Typography
-                component="div"
-                variant="h5"
-                style={{ margin: "10px" }}
-              >
-                Profile Details
-              </Typography>
-              <div>
-                <CardContent>
-                  <Divider>
-                    <Chip label="UID" />
-                  </Divider>
-                  <br />
-                  <Typography variant="h6" component="div" gutterBottom>
-                    {user.uid}
-                  </Typography>
-                  <br />
-                  <Divider>
-                    <Chip label="AGE" />
-                  </Divider>
-                  <br />
-                  <Typography variant="h6" component="div" gutterBottom>
-                    {user.age}
-                  </Typography>
-                  <br />
-                  <Divider>
-                    <Chip label="PHONE NO." />
-                  </Divider>
-                  <br />
-                  <Typography variant="h6" component="div" gutterBottom>
-                    {user.phone}
-                  </Typography>
-                  <br />
-                  <Divider>
-                    <Chip label="EMAIL" />
-                  </Divider>
-                  <br />
-                  <Typography variant="h6" component="div" gutterBottom>
-                    {user.email}
-                  </Typography>
-                </CardContent>
-              </div>
+            <Typography component="div" variant="h5" style={{ margin: "10px" }}>
+              Profile Details
+            </Typography>
+            <div>
+              <CardContent>
+                <Divider>
+                  <Chip label="UID" />
+                </Divider>
+                <br />
+                <Typography variant="h6" component="div" gutterBottom>
+                  {user.uid}
+                </Typography>
+                <br />
+                <Divider>
+                  <Chip label="AGE" />
+                </Divider>
+                <br />
+                <Typography variant="h6" component="div" gutterBottom>
+                  {user.age}
+                </Typography>
+                <br />
+                <Divider>
+                  <Chip label="PHONE NO." />
+                </Divider>
+                <br />
+                <Typography variant="h6" component="div" gutterBottom>
+                  {user.phone}
+                </Typography>
+                <br />
+                <Divider>
+                  <Chip label="EMAIL" />
+                </Divider>
+                <br />
+                <Typography variant="h6" component="div" gutterBottom>
+                  {user.email}
+                </Typography>
+              </CardContent>
+            </div>
           </CardContent>
           {ReactSession.get("type") === "student" ? (
             <></>
           ) : (
             <CardActions>
               <IconButton
-                color="warning"
+                color="info"
                 onClick={() => {
-                  setId(user._id);
+                  setUser(user);
                   setType("edit");
                   setopen(true);
                 }}
@@ -205,9 +226,10 @@ export function Users() {
                 <EditIcon />
               </IconButton>
               <IconButton
-                color="warning"
+                color="error"
                 onClick={() => {
-                  handleDelete(user._id);
+                  setUser(user);
+                  handleDelete();
                 }}
               >
                 <DeleteIcon />
@@ -233,20 +255,18 @@ export function Users() {
         </Fab>
       )}
       <Dialog open={open} onClose={() => setopen(false)}>
-        <DialogTitle>
-          {type === "add" ? "Add Notice" : "Edit Notice"}
-        </DialogTitle>
+        <DialogTitle>{type === "add" ? "Add User" : "Edit User"}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            To {type === "add" ? "Add " : "Edit "}Notice in the Notice List
-            please fill the below details
+            To {type === "add" ? "Add " : "Edit "}User in the User List please
+            fill the below details
             {<br />}
             It is cumpulsory to fill all fields else form doesn't get submitted
           </DialogContentText>
           <TextField
             required
-            variant="filled"
-            autoFocus
+            defaultValue={type === "edit" ? user.name : ""}
+            variant="outlined"
             margin="dense"
             id="Name"
             label="Name"
@@ -256,17 +276,19 @@ export function Users() {
           />
           <TextField
             required
-            variant="filled"
+            defaultValue={type === "edit" ? user.email : ""}
+            variant="outlined"
             margin="dense"
             id="Email"
-            label="Eamil"
+            label="Email"
             onChange={(e) => setEmail(e.target.value)}
             type="email"
             fullWidth
           />
           <TextField
             required
-            variant="filled"
+            defaultValue={type === "edit" ? user.uid : ""}
+            variant="outlined"
             margin="dense"
             id="uid"
             label="Uid"
@@ -277,7 +299,8 @@ export function Users() {
           <TextField
             error={age < 0 && age > 100}
             required
-            variant="filled"
+            defaultValue={type === "edit" ? user.age : ""}
+            variant="outlined"
             margin="dense"
             id="Age"
             label="Age"
@@ -288,7 +311,8 @@ export function Users() {
           <TextField
             error={age < 0 && age > 100}
             required
-            variant="filled"
+            defaultValue={type === "edit" ? user.phone : ""}
+            variant="outlined"
             margin="dense"
             id="phone"
             label="Phone Number"
@@ -297,9 +321,9 @@ export function Users() {
             fullWidth
           />
           <TextField
-            error={age < 0 && age > 100}
             required
-            variant="filled"
+            defaultValue={type === "edit" ? user.role : ""}
+            variant="outlined"
             margin="dense"
             id="role"
             label="Role"
@@ -308,9 +332,9 @@ export function Users() {
             fullWidth
           />
           <TextField
-            error={age < 0 && age > 100}
+            error={password.length < 7}
             required
-            variant="filled"
+            variant="outlined"
             margin="dense"
             id="password"
             label="Password"
