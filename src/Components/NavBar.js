@@ -97,7 +97,7 @@ const Drawer = styled(MuiDrawer, {
 
 export function NavBar() {
   const location = useLocation();
-  return <>{location.pathname === "/login" ? <></> : NavBar_()}</>;
+  return <>{location.pathname === "/login" || location.pathname === "/password-reset" ? <></> : NavBar_()}</>;
 }
 
 function NavBar_() {

@@ -24,7 +24,7 @@ function Copyright(props) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
+      <Link color="inherit" href="https://www.narmadacollege.ac.in/">
         NCSC College Managemnet System
       </Link>{" "}
       {new Date().getFullYear()}
@@ -144,7 +144,7 @@ export function SignInSide() {
               >
                 Sign In
               </Button>
-              <Link href="#" variant="body2">
+              <Link href="/password-reset" variant="body2">
                 Forgot password?
               </Link>
               <Copyright sx={{ mt: 5 }} />

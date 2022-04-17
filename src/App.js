@@ -8,6 +8,7 @@ import { Links } from "./Components/Links";
 import { Notices } from "./Components/Notices";
 import { Users } from "./Components/Users";
 import { NotFoundPage } from "./Components/NotFoundPage";
+import { Reset } from "./Components/Reset";
 import {
   Route,
   Routes,
@@ -37,6 +38,7 @@ function App() {
           <Route path="subjects" element={<Subjects />} />
           <Route path="assignments" element={<Assignments />} />
         </Route>
+        <Route path="/password-reset" element={<Reset />} />
         {/* <Route path="**" element={<Navigate replace to="/pageNotFound" />} exact /> */}
         {/* <Route path="**" element={<NotFoundPage />} /> */}
         <Route element={<NotFoundPage />} />
