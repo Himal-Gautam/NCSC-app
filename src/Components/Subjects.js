@@ -20,8 +20,13 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { API } from "../global.js"
+import { API } from "../global.js";
 import InputLabel from "@mui/material/InputLabel";
+import Paper from "@mui/material/Paper";
+import InputBase from "@mui/material/InputBase";
+import MenuIcon from "@mui/icons-material/Menu";
+import SearchIcon from "@mui/icons-material/Search";
+import DirectionsIcon from "@mui/icons-material/Directions";
 import MenuItem from "@mui/material/MenuItem";
 export function Subjects() {
   const [subjects, setSubjects] = useState([]);
@@ -32,6 +37,7 @@ export function Subjects() {
   const [code, setCode] = useState("");
   const [tid, setTid] = useState(0);
   const [users, setUsers] = useState([]);
+  const [search, setSearch] = useState("");
 
   function updateSubjects() {
     fetch(`${API}/subjects`, {
@@ -64,7 +70,7 @@ export function Subjects() {
     })
       .then((response) => response.json())
       .then((data) => {
-        setUsers(data.filter((user) => user.role==="teacher"));
+        setUsers(data.filter((user) => user.role === "teacher"));
       })
       .catch((err) => {
         console.log(err);
@@ -79,7 +85,7 @@ export function Subjects() {
       body: JSON.stringify({
         name: name,
         code: code,
-        teacherId: tid
+        teacherId: tid,
       }),
       headers: {
         Authorization: "Bearer " + ReactSession.get("token"),
@@ -90,7 +96,6 @@ export function Subjects() {
     updateSubjects();
   }
 
- 
   async function handleEdit() {
     setopen(!open);
     await fetch(`${API}/subjects/${subject._id}`, {
@@ -98,7 +103,7 @@ export function Subjects() {
       body: JSON.stringify({
         name: name,
         code: code,
-        teacherId: tid
+        teacherId: tid,
       }),
       headers: {
         Authorization: "Bearer " + ReactSession.get("token"),
@@ -122,62 +127,90 @@ export function Subjects() {
 
   return (
     <div className="area users-area">
-      {subjects.reverse().map((subject) => (
-        <Card sx={{ minWidth: 200, maxWidth: 300 }} raised="true">
-          <CardContent>
-            <Divider>
-              <Chip label="SUBJECT NAME" />
-            </Divider>
-            <br />
-            <Typography variant="h6" component="div" gutterBottom>
-              {subject.name}
-            </Typography>
-            <br />
-            <Divider>
-              <Chip label="SUBJECT CODE" />
-            </Divider>
-            <br />
-            <Typography variant="h6" component="div" gutterBottom>
-              {subject.code}
-            </Typography>
-            <br />
-            <Divider>
-              <Chip label="SUBJECT TEACHER" />
-            </Divider>
-            <br />
-            <Typography variant="h6" component="div" gutterBottom>
-              {subject.teacher.name}
-            </Typography>
-          </CardContent>
-          {ReactSession.get("type") === "student" ? (
-            <></>
-          ) : (
-            <CardActions>
-              <IconButton
-                color="info"
-                onClick={() => {
-                  updateUsers()
-                  console.log(users)
-                  setSubject(subject);
-                  setType("edit");
-                  setopen(true);
-                }}
-              >
-                <EditIcon />
-              </IconButton>
-              <IconButton
-                color="error"
-                onClick={() => {
-                  setSubject(subject);
-                  handleDelete()
-                }}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </CardActions>
-          )}
-        </Card>
-      ))}
+      <Paper
+        component="form"
+        sx={{
+          p: "2px 4px",
+          display: "flex",
+          alignItems: "center",
+          width: "100%",
+          mb:3
+        }}
+        elevation={15}
+      >
+        <InputBase
+          sx={{ mb: 1,mt: 1, ml: 2, flex: 1 }}
+          placeholder="Search Subjects"
+          inputProps={{ "aria-label": "search google maps" }}
+          onChange={(e) => setSearch(e.target.value.toLowerCase())}
+        />
+        {/* <IconButton sx={{ p: "10px" }} aria-label="search">
+          <SearchIcon />
+        </IconButton> */}
+      </Paper>
+
+      {subjects
+        .filter((subject) => {
+          return !!(subject.code.toString().toLowerCase().includes(search) ||
+            subject.name.toLowerCase().includes(search) ||
+            subject.teacher.name.toLowerCase().includes(search));
+        })
+        .map((subject) => (
+          <Card sx={{ minWidth: 300, maxWidth: 300, mb:3 }} raised="true">
+            <CardContent>
+              <Divider>
+                <Chip label="SUBJECT NAME" />
+              </Divider>
+              <br />
+              <Typography variant="h6" component="div" gutterBottom>
+                {subject.name}
+              </Typography>
+              <br />
+              <Divider>
+                <Chip label="SUBJECT CODE" />
+              </Divider>
+              <br />
+              <Typography variant="h6" component="div" gutterBottom>
+                {subject.code}
+              </Typography>
+              <br />
+              <Divider>
+                <Chip label="SUBJECT TEACHER" />
+              </Divider>
+              <br />
+              <Typography variant="h6" component="div" gutterBottom>
+                {subject.teacher.name}
+              </Typography>
+            </CardContent>
+            {ReactSession.get("type") === "student" ? (
+              <></>
+            ) : (
+              <CardActions>
+                <IconButton
+                  color="info"
+                  onClick={() => {
+                    updateUsers();
+                    console.log(users);
+                    setSubject(subject);
+                    setType("edit");
+                    setopen(true);
+                  }}
+                >
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  color="error"
+                  onClick={() => {
+                    setSubject(subject);
+                    handleDelete();
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </CardActions>
+            )}
+          </Card>
+        ))}
       {ReactSession.get("type") === "student" ? (
         <></>
       ) : (
@@ -187,7 +220,7 @@ export function Subjects() {
           style={{ position: "fixed", right: "20px", bottom: "20px" }}
           size="large"
           onClick={() => {
-            updateUsers()
+            updateUsers();
             setType("add");
             setopen(true);
           }}
@@ -222,7 +255,7 @@ export function Subjects() {
             margin="dense"
             id="code"
             label="Subject Code"
-            type="text"
+            type="number"
             fullWidth
             variant="outlined"
             onChange={(event) => setCode(event.target.value)}
@@ -250,9 +283,19 @@ export function Subjects() {
               onChange={(event) => setTid(event.target.value)}
               fullWidth
             >
-              {users.map((user) => (
-                <MenuItem value={user._id}>{user.name}</MenuItem>
-              ))}
+              {users
+                .sort((a, b) => {
+                  if (a.name < b.name) {
+                    return -1;
+                  }
+                  if (a.name > b.name) {
+                    return 1;
+                  }
+                  return 0;
+                })
+                .map((user) => (
+                  <MenuItem value={user._id}>{user.name}</MenuItem>
+                ))}
             </Select>
           </FormControl>
         </DialogContent>

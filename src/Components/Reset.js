@@ -56,7 +56,8 @@ export function Reset() {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        setSuccess(data.success);
+        setSuccess(true);
+        console.log(data.success)
       })
       .catch((err) => {
         console.log(err);

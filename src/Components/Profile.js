@@ -83,11 +83,11 @@ export function Profile() {
       ) : (
         <></>
       )}
-      {dialogType === "createAssignment" ? (
+      {/* {dialogType === "createAssignment" ? (
         <CreateAssignment open={open} setOpen={setOpen} />
       ) : (
         <></>
-      )}
+      )} */}
       <Card sx={{ display: "flex", minWidth: 300 }} variant="outlined">
         <CardMedia
           component="img"
@@ -199,6 +199,48 @@ export function Profile() {
                   sx={{ maxWidth: 500 }}
                 >
                   Create Assignment
+                </Button>
+              </>
+            ) : (
+              <></>
+            )}
+            {ReactSession.get("type") === "admin" ? (
+              <>
+                <Button
+                  size="medium"
+                  variant="outlined"
+                  onClick={handleCreateAssignment}
+                  fullWidth
+                  sx={{ maxWidth: 500 }}
+                >
+                  Create Assignment
+                </Button>
+                <Button
+                  size="medium"
+                  variant="outlined"
+                  onClick={handleCreateAssignment}
+                  fullWidth
+                  sx={{ maxWidth: 500 }}
+                >
+                  Create Notice
+                </Button>
+                <Button
+                  size="medium"
+                  variant="outlined"
+                  onClick={handleCreateAssignment}
+                  fullWidth
+                  sx={{ maxWidth: 500 }}
+                >
+                  Create User
+                </Button>
+                <Button
+                  size="medium"
+                  variant="outlined"
+                  onClick={handleCreateAssignment}
+                  fullWidth
+                  sx={{ maxWidth: 500 }}
+                >
+                  Create Subject
                 </Button>
               </>
             ) : (
@@ -377,7 +419,7 @@ function SubmitAssignment({ open, setOpen }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        setSubjects(data.map((subject) => subject.name));
+        setSubjects(data);
       })
       .catch((err) => {
         console.log(err);
@@ -389,14 +431,16 @@ function SubmitAssignment({ open, setOpen }) {
   }, []);
 
   const handleSubmit = () => {
-    fetch(`${API}/attendance`, {
+    console.log(selectedFile)
+    fetch(`${API}/assignment-submission`, {
       method: "POST",
       body: JSON.stringify({
-        subjectName: choice,
+        subject: choice,
+        file: selectedFile
       }),
       headers: new Headers({
         Authorization: "Bearer " + ReactSession.get("token"),
-        "Content-Type": "application/json; charset=UTF-8",
+        "Content-Type": "multipart/form-data; charset=UTF-8",
       }),
     }).catch((err) => {
       console.log(err);
@@ -431,135 +475,7 @@ function SubmitAssignment({ open, setOpen }) {
             >
               <MenuItem value="">Select</MenuItem>
               {subjects.map((subject) => (
-                <MenuItem value={subject}>{subject}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl fullWidth sx={{ mt: 2 }}>
-            <InputLabel id="demo-simple-select-label">Assignment</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={choice}
-              label="Choose Subject"
-              onChange={handleChange}
-              fullWidth
-            >
-              <MenuItem value="">Select</MenuItem>
-              {subjects.map((subject) => (
-                <MenuItem value={subject}>{subject}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <Button
-            required
-            variant="outlined"
-            color={isSelected ? "success" : "error"}
-            fullWidth
-            sx={{ mt: 2, mb: 2 }}
-          >
-            <input type="file" name="file" onChange={changeHandler}></input>
-          </Button>
-          {isSelected ? (
-            <div>
-              <p>Filename: {selectedFile.name}</p>
-              <p>Filetype: {selectedFile.type}</p>
-              <p>Size in bytes: {selectedFile.size}</p>
-              <p>
-                lastModifiedDate:{" "}
-                {selectedFile.lastModifiedDate.toLocaleDateString()}
-              </p>
-            </div>
-          ) : (
-            <p>Select a file to show details</p>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit} variant="contained">
-            Submit
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  );
-}
-
-function CreateAssignment({ open, setOpen }) {
-  const [subjects, setSubjects] = useState([]);
-  const [choice, setChoice] = useState([]);
-  const [selectedFile, setSelectedFile] = useState();
-  const [isSelected, setIsSelected] = useState(false);
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  function updateSubjects() {
-    fetch(`${API}/subjects`, {
-      method: "GET",
-      headers: new Headers({
-        Authorization: "Bearer " + ReactSession.get("token"),
-        "Content-Type": "application/json; charset=UTF-8",
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setSubjects(data.map((subject) => subject.name));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-
-  useEffect(() => {
-    updateSubjects();
-  }, []);
-
-  const handleSubmit = () => {
-    fetch(`${API}/attendance`, {
-      method: "POST",
-      body: JSON.stringify({
-        subjectName: choice,
-      }),
-      headers: new Headers({
-        Authorization: "Bearer " + ReactSession.get("token"),
-        "Content-Type": "application/json; charset=UTF-8",
-      }),
-    }).catch((err) => {
-      console.log(err);
-    });
-
-    setOpen(false);
-  };
-
-  const handleChange = (event) => {
-    setChoice(event.target.value);
-  };
-
-  const changeHandler = (event) => {
-    setSelectedFile(event.target.files[0]);
-    setIsSelected(true);
-  };
-
-  return (
-    <div>
-      <Dialog open={open} onClose={handleClose} sx={{ minWidth: 200 }}>
-        <DialogTitle>Submit Assignments</DialogTitle>
-        <DialogContent>
-          <FormControl fullWidth sx={{ mt: 2 }}>
-            <InputLabel id="demo-simple-select-label">Subject</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={choice}
-              label="Choose Subject"
-              onChange={handleChange}
-              fullWidth
-            >
-              <MenuItem value="">Select</MenuItem>
-              {subjects.map((subject) => (
-                <MenuItem value={subject}>{subject}</MenuItem>
+                <MenuItem value={subject._id}>{subject.name}</MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -612,3 +528,131 @@ function CreateAssignment({ open, setOpen }) {
     </div>
   );
 }
+
+// function CreateAssignment({ open, setOpen }) {
+//   const [subjects, setSubjects] = useState([]);
+//   const [choice, setChoice] = useState([]);
+//   const [selectedFile, setSelectedFile] = useState();
+//   const [isSelected, setIsSelected] = useState(false);
+
+//   const handleClose = () => {
+//     setOpen(false);
+//   };
+
+//   function updateSubjects() {
+//     fetch(`${API}/subjects`, {
+//       method: "GET",
+//       headers: new Headers({
+//         Authorization: "Bearer " + ReactSession.get("token"),
+//         "Content-Type": "application/json; charset=UTF-8",
+//       }),
+//     })
+//       .then((response) => response.json())
+//       .then((data) => {
+//         setSubjects(data.map((subject) => subject.name));
+//       })
+//       .catch((err) => {
+//         console.log(err);
+//       });
+//   }
+
+//   useEffect(() => {
+//     updateSubjects();
+//   }, []);
+
+//   const handleSubmit = () => {
+//     fetch(`${API}/ass`, {
+//       method: "POST",
+//       body: JSON.stringify({
+//         subjectName: choice,
+//       }),
+//       headers: new Headers({
+//         Authorization: "Bearer " + ReactSession.get("token"),
+//         "Content-Type": "application/json; charset=UTF-8",
+//       }),
+//     }).catch((err) => {
+//       console.log(err);
+//     });
+
+//     setOpen(false);
+//   };
+
+//   const handleChange = (event) => {
+//     setChoice(event.target.value);
+//   };
+
+//   const changeHandler = (event) => {
+//     setSelectedFile(event.target.files[0]);
+//     setIsSelected(true);
+//   };
+
+//   return (
+//     <div>
+//       <Dialog open={open} onClose={handleClose} sx={{ minWidth: 200 }}>
+//         <DialogTitle>Submit Assignments</DialogTitle>
+//         <DialogContent>
+//           <FormControl fullWidth sx={{ mt: 2 }}>
+//             <InputLabel id="demo-simple-select-label">Subject</InputLabel>
+//             <Select
+//               labelId="demo-simple-select-label"
+//               id="demo-simple-select"
+//               value={choice}
+//               label="Choose Subject"
+//               onChange={handleChange}
+//               fullWidth
+//             >
+//               <MenuItem value="">Select</MenuItem>
+//               {subjects.map((subject) => (
+//                 <MenuItem value={subject}>{subject}</MenuItem>
+//               ))}
+//             </Select>
+//           </FormControl>
+//           {/* <FormControl fullWidth sx={{ mt: 2 }}>
+//             <InputLabel id="demo-simple-select-label">Assignment</InputLabel>
+//             <Select
+//               labelId="demo-simple-select-label"
+//               id="demo-simple-select"
+//               value={choice}
+//               label="Choose Subject"
+//               onChange={handleChange}
+//               fullWidth
+//             >
+//               <MenuItem value="">Select</MenuItem>
+//               {subjects.map((subject) => (
+//                 <MenuItem value={subject}>{subject}</MenuItem>
+//               ))}
+//             </Select>
+//           </FormControl> */}
+//           <Button
+//             required
+//             variant="outlined"
+//             color={isSelected ? "success" : "error"}
+//             fullWidth
+//             sx={{ mt: 2, mb: 2 }}
+//           >
+//             <input type="file" name="file" onChange={changeHandler}></input>
+//           </Button>
+//           {isSelected ? (
+//             <div>
+//               <p>Filename: {selectedFile.name}</p>
+//               <p>Filetype: {selectedFile.type}</p>
+//               <p>Size in bytes: {selectedFile.size}</p>
+//               <p>
+//                 lastModifiedDate:{" "}
+//                 {selectedFile.lastModifiedDate.toLocaleDateString()}
+//               </p>
+//             </div>
+//           ) : (
+//             <p>Select a file to show details</p>
+//           )}
+//         </DialogContent>
+//         <DialogActions>
+//           <Button onClick={handleClose}>Cancel</Button>
+//           <Button onClick={handleSubmit} variant="contained">
+//             Submit
+//           </Button>
+//         </DialogActions>
+//       </Dialog>
+//     </div>
+//   );
+// }

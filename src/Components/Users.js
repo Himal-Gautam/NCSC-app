@@ -37,7 +37,7 @@ export function Users() {
   const [open, setopen] = useState(false);
   const [type, setType] = useState("add");
   const [user, setUser] = useState({});
-
+  const [search, setSearch] = useState("");
   const [password, setPassword] = useState("********");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -68,8 +68,7 @@ export function Users() {
   }, []);
 
   async function handleAdd() {
-    // setopen(!open);
-
+    setopen(!open);
     fetch("http://localhost:4000/users", {
       method: "POST",
       headers: new Headers({
@@ -87,14 +86,14 @@ export function Users() {
     }).catch((err) => {
       console.log(err);
     });
-
     updateUsers();
   }
 
   async function handleEdit() {
     console.log(user._id);
-    //   // setSnackOpen(true);
     setopen(!open);
+
+    //   // setSnackOpen(true);
     await fetch(`http://localhost:4000/user/${user._id}`, {
       method: "PATCH",
       body: JSON.stringify({
@@ -128,116 +127,142 @@ export function Users() {
 
   return (
     <div className="area users-area">
-      <Paper
+       <Paper
         component="form"
         sx={{
           p: "2px 4px",
           display: "flex",
           alignItems: "center",
           width: "100%",
+          mb:3
         }}
+        elevation={15}
       >
         <InputBase
-          sx={{ ml: 1, flex: 1 }}
-          placeholder="Search Users"
+          sx={{ mb: 1,mt: 1, ml: 2, flex: 1 }}
+          placeholder="Search Subjects"
           inputProps={{ "aria-label": "search google maps" }}
+          onChange={(e) => setSearch(e.target.value.toLowerCase())}
         />
-        <IconButton sx={{ p: "10px" }} aria-label="search">
+        {/* <IconButton sx={{ p: "10px" }} aria-label="search">
           <SearchIcon />
-        </IconButton>
+        </IconButton> */}
       </Paper>
 
-      {users.map((user) => (
-        <Card sx={{ minWidth: 450, maxWidth: "45%" }} raised="true">
-          <CardContent>
-            <div style={{ display: "flex", minWidth: 300 }} variant="outlined">
-              <CardMedia
-                component="img"
-                sx={{ maxWidth: 200, minHeight: 150 }}
-                image={user.image}
-                alt="Live from space album cover"
-              />
-              <div style={{ textAlign: "left", height: "100" }}>
+      {users
+        .filter((user) => {
+          if (
+            user.uid.toString().toLowerCase().includes(search) ||
+            user.name.toLowerCase().includes(search)
+          ) {
+            return true;
+          }
+          return false;
+        })
+        .map((user) => (
+          <Card sx={{ minWidth: 400, maxWidth: 400, mb:3 }} raised="true">
+            <CardContent>
+              <div
+                style={{ display: "flex", minWidth: 300 }}
+                variant="outlined"
+              >
+                <CardMedia
+                  component="img"
+                  sx={{ maxWidth: 200, minHeight: 150 }}
+                  image={user.image}
+                  alt="Live from space album cover"
+                />
+                <div style={{ textAlign: "left", height: "100" }}>
+                  <CardContent>
+                    <Typography component="div" variant="h5">
+                      <b>{user.name}</b>
+                    </Typography>
+                    <Typography
+                      variant="subtitle1"
+                      color="text.secondary"
+                      component="div"
+                    >
+                      <b>{user.role}</b>
+                    </Typography>
+                  </CardContent>
+                </div>
+              </div>
+              <Typography
+                component="div"
+                variant="h5"
+                style={{ margin: "10px" }}
+              >
+                Profile Details
+              </Typography>
+              <div>
                 <CardContent>
-                  <Typography component="div" variant="h5">
-                    <b>{user.name}</b>
+                  <Divider>
+                    <Chip label="UID" />
+                  </Divider>
+                  <br />
+                  <Typography variant="h6" component="div" gutterBottom>
+                    {user.uid}
                   </Typography>
-                  <Typography
-                    variant="subtitle1"
-                    color="text.secondary"
-                    component="div"
-                  >
-                    <b>{user.role}</b>
+                  <br />
+                  <Divider>
+                    <Chip label="AGE" />
+                  </Divider>
+                  <br />
+                  <Typography variant="h6" component="div" gutterBottom>
+                    {user.age}
+                  </Typography>
+                  <br />
+                  <Divider>
+                    <Chip label="PHONE NO." />
+                  </Divider>
+                  <br />
+                  <Typography variant="h6" component="div" gutterBottom>
+                    {user.phone}
+                  </Typography>
+                  <br />
+                  <Divider>
+                    <Chip label="EMAIL" />
+                  </Divider>
+                  <br />
+                  <Typography variant="h6" component="div" gutterBottom>
+                    {user.email}
                   </Typography>
                 </CardContent>
               </div>
-            </div>
-            <Typography component="div" variant="h5" style={{ margin: "10px" }}>
-              Profile Details
-            </Typography>
-            <div>
-              <CardContent>
-                <Divider>
-                  <Chip label="UID" />
-                </Divider>
-                <br />
-                <Typography variant="h6" component="div" gutterBottom>
-                  {user.uid}
-                </Typography>
-                <br />
-                <Divider>
-                  <Chip label="AGE" />
-                </Divider>
-                <br />
-                <Typography variant="h6" component="div" gutterBottom>
-                  {user.age}
-                </Typography>
-                <br />
-                <Divider>
-                  <Chip label="PHONE NO." />
-                </Divider>
-                <br />
-                <Typography variant="h6" component="div" gutterBottom>
-                  {user.phone}
-                </Typography>
-                <br />
-                <Divider>
-                  <Chip label="EMAIL" />
-                </Divider>
-                <br />
-                <Typography variant="h6" component="div" gutterBottom>
-                  {user.email}
-                </Typography>
-              </CardContent>
-            </div>
-          </CardContent>
-          {ReactSession.get("type") === "student" ? (
-            <></>
-          ) : (
-            <CardActions>
-              <IconButton
-                color="info"
-                onClick={() => {
-                  setUser(user);
-                  setType("edit");
-                  setopen(true);
-                }}
-              >
-                <EditIcon />
-              </IconButton>
-              <IconButton
-                color="error"
-                onClick={() => {
-                  setUser(user);
-                  handleDelete();
-                }}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </CardActions>
-          )}
-        </Card>
-      ))}
+            </CardContent>
+            {ReactSession.get("type") === "student" ? (
+              <></>
+            ) : (
+              <CardActions>
+                <IconButton
+                  color="info"
+                  onClick={() => {
+                    setUser(user);
+                    setName(user.name);
+                    setEmail(user.email);
+                    setRole(user.role);
+                    setAge(user.age);
+                    setPhone(user.phone);
+                    setUid(user.uid);
+                    setType("edit");
+                    setopen(true);
+                  }}
+                >
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  color="error"
+                  onClick={() => {
+                    setUser(user);
+                    handleDelete();
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </CardActions>
+            )}
+          </Card>
+        ))}
       {ReactSession.get("type") === "student" ? (
         <></>
       ) : (
@@ -348,15 +373,7 @@ export function Users() {
           <Button
             onClick={type === "add" ? handleAdd : handleEdit}
             type="submit"
-            disabled={
-              name === "" ||
-              email === "" ||
-              password === "" ||
-              role === "" ||
-              phone === "" ||
-              age === "" ||
-              uid === ""
-            }
+            disabled={password === ""}
           >
             Submit
           </Button>
