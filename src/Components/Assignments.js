@@ -20,7 +20,8 @@ import InputLabel from "@mui/material/InputLabel";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import {API} from "../global.js";
+import { API } from "../global.js";
+import Box from "@mui/material/Box";
 
 export function Assignments() {
   const [assignments, setAssignments] = useState([]);
@@ -71,27 +72,29 @@ export function Assignments() {
     updateSubjects();
   }, []);
 
-
-  
   async function handleAdd() {
+    console.log("hello")
     if (title !== "" && description !== "") {
-      // setSnackOpen(true);
-      setopen(!open);
-
+      let data = new FormData();
+      data.append("mySubject", choice);
+      console.log(data)
       await fetch(`${API}/assignments`, {
         method: "POST",
-        body: JSON.stringify({
-          title: title,
-          description: description,
-          subject: choice
-        }),
+        // body: JSON.stringify({
+        //   title: title,
+        //   description: description,
+        //   subject: choice,
+        // }),
+        body: data,
         headers: {
+          Accept: 'application/form-data',
           Authorization: "Bearer " + ReactSession.get("token"),
           "Content-Type": "application/json; charset=UTF-8",
         },
       });
 
-      updateAssignments();
+      // updateAssignments();
+      // setopen(!open);
     }
   }
 
@@ -100,11 +103,10 @@ export function Assignments() {
   };
 
   async function handleEdit() {
-    console.log(id, title, description)
+    console.log(id, title, description);
     if (title !== "" && description !== "") {
       // setSnackOpen(true);
-      setopen(!open);
-      await fetch(`${API}/notices/${id}`, {
+      await fetch(`${API}/assignment/${id}`, {
         method: "PATCH",
         body: JSON.stringify({
           title: title,
@@ -117,24 +119,25 @@ export function Assignments() {
       });
 
       updateAssignments();
+      setopen(!open);
     }
   }
 
-  async function handleDelete(id) {
-      await fetch(`${API}/notices/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: "Bearer " + ReactSession.get("token"),
-          "Content-Type": "application/json; charset=UTF-8",
-        },
-      });
-      updateAssignments();
-    
-  }
+  // async function handleDelete(id) {
+  //     await fetch(`${API}/notices/${id}`, {
+  //       method: "DELETE",
+  //       headers: {
+  //         Authorization: "Bearer " + ReactSession.get("token"),
+  //         "Content-Type": "application/json; charset=UTF-8",
+  //       },
+  //     });
+  //     updateAssignments();
+
+  // }
 
   return (
     <div className="area notices-area">
-      {assignments.reverse().map((assignment) => (
+      {assignments.reverse().map((assignment, index) => (
         <Card sx={{ minWidth: 200 }}>
           <CardContent>
             <div className="content">
@@ -142,31 +145,43 @@ export function Assignments() {
                 {assignment.title}
               </Typography>
               <Typography variant="body1">{assignment.description}</Typography>
-              <Typography color="text.secondary">{assignment.teacher.name}</Typography>
-              <Typography color="text.secondary">{assignment.subject.name}</Typography>
-              <Typography color="text.secondary">{assignment.updatedAt.split("T")[0].split("-").reverse().join("-") + " " + assignment.updatedAt.split("T")[1].slice(0,5)}</Typography>
+              <Typography color="text.secondary">
+                {assignment.teacher.name}
+              </Typography>
+              <Typography color="text.secondary">
+                {assignment.subject.name}
+              </Typography>
+              <Typography color="text.secondary">
+                {assignment.updatedAt
+                  .split("T")[0]
+                  .split("-")
+                  .reverse()
+                  .join("-") +
+                  " " +
+                  assignment.updatedAt.split("T")[1].slice(0, 5)}
+              </Typography>
             </div>
           </CardContent>
           {ReactSession.get("type") === "student" ? (
             <></>
           ) : (
             <CardActions>
-               <IconButton
+              <IconButton
                 color="warning"
-                onClick={()=>{
+                onClick={() => {
                   setId(assignment._id);
                   setType("edit");
-                  setopen(true);}
-                }
+                  setopen(true);
+                }}
               >
                 <EditIcon />
               </IconButton>
               <IconButton
                 color="warning"
-                onClick={()=>{
+                onClick={() => {
                   setId(assignment._id);
-                  handleDelete(assignment._id)}
-                }
+                  // handleDelete(assignment._id)
+                }}
               >
                 <DeleteIcon />
               </IconButton>
@@ -194,60 +209,68 @@ export function Assignments() {
         <DialogTitle>
           {type === "give" ? "Give " : "Edit "}Assignment
         </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            To {type === "give" ? "Give " : "Edit "}Assignment in the Assignments List
-            please fill the below details
-            {<br />}
-            It is cumpulsory to fill all fields else form doesn't get submitted
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="title"
-            label="Notice Title"
-            type="text"
-            fullWidth
-            variant="filled"
-            onChange={(event) => setTitle(event.target.value)}
-            required
-          />
-          <TextField
-            margin="dense"
-            id="description"
-            label="Notice Description"
-            type="text"
-            fullWidth
-            variant="filled"
-            onChange={(event) => setDescription(event.target.value)}
-            required
-          />
-          <FormControl fullWidth sx={{ mt: 2 }}>
-            <InputLabel id="demo-simple-select-label">Subject</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={choice}
-              label="Choose Subject"
-              onChange={handleChange}
+        <Box
+          component="form"
+          noValidate
+          // onSubmit={type === "add" ? handleAdd : handleEdit}
+          sx={{ mt: 1 }}
+        >
+          <DialogContent>
+            <DialogContentText>
+              To {type === "give" ? "Give " : "Edit "}Assignment in the
+              Assignments List please fill the below details
+              {<br />}
+              It is cumpulsory to fill all fields else form doesn't get
+              submitted
+            </DialogContentText>
+
+            <TextField
+              autoFocus
+              margin="dense"
+              id="title"
+              label="Assingment Title"
+              type="text"
               fullWidth
-            >
-              <MenuItem value="">Select</MenuItem>
-              {subjects.map((subject) => (
-                <MenuItem value={subject}>{subject}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setopen(false)}>Cancel</Button>
-          <Button
-            onClick={type === "add" ? handleAdd : handleEdit}
-            type="submit"
-          >
-            Submit
-          </Button>
-        </DialogActions>
+              variant="filled"
+              onChange={(event) => setTitle(event.target.value)}
+              required
+            />
+            <TextField
+              margin="dense"
+              id="description"
+              label="Assingment Description"
+              type="text"
+              fullWidth
+              variant="filled"
+              onChange={(event) => setDescription(event.target.value)}
+              required
+            />
+            <FormControl fullWidth sx={{ mt: 2 }}>
+              <InputLabel id="demo-simple-select-label">Subject</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={choice}
+                label="Choose Subject"
+                onChange={handleChange}
+                fullWidth
+              >
+                <MenuItem value="">Select</MenuItem>
+                {subjects.map((subject) => (
+                  <MenuItem value={subject}>{subject}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            {/* <FormControlLabel
+                control={<Checkbox value="remember" color="primary" />}
+                label="Remember me"
+              /> */}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setopen(false)}>Cancel</Button>
+            <Button onClick={type === "add" ? handleAdd : handleEdit} >Submit</Button>
+          </DialogActions>
+        </Box>
       </Dialog>
     </div>
   );

@@ -8,29 +8,20 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import CardMedia from "@mui/material/CardMedia";
-
 import { ReactSession } from "react-client-session";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
-
-import Rating from "@mui/material/Rating";
-import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
-import InputLabel from "@mui/material/InputLabel";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import MuiAlert from "@mui/material/Alert";
-
 import Paper from "@mui/material/Paper";
 import InputBase from "@mui/material/InputBase";
-import MenuIcon from "@mui/icons-material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
-import DirectionsIcon from "@mui/icons-material/Directions";
+import {API} from "../global.js"
 
 export function Users() {
   const [users, setUsers] = useState([]);
@@ -47,7 +38,7 @@ export function Users() {
   const [phone, setPhone] = useState(0);
 
   function updateUsers() {
-    fetch("http://localhost:4000/users", {
+    fetch(`${API}/users`, {
       method: "GET",
       headers: new Headers({
         Authorization: "Bearer " + ReactSession.get("token"),
@@ -69,7 +60,7 @@ export function Users() {
 
   async function handleAdd() {
     setopen(!open);
-    fetch("http://localhost:4000/users", {
+    fetch(`${API}/users`, {
       method: "POST",
       headers: new Headers({
         "Content-Type": "application/json; charset=UTF-8",
@@ -94,7 +85,7 @@ export function Users() {
     setopen(!open);
 
     //   // setSnackOpen(true);
-    await fetch(`http://localhost:4000/user/${user._id}`, {
+    await fetch(`${API}/user/${user._id}`, {
       method: "PATCH",
       body: JSON.stringify({
         name: name,
@@ -115,7 +106,7 @@ export function Users() {
   }
 
   async function handleDelete() {
-    await fetch(`http://localhost:4000/users/${user._id}`, {
+    await fetch(`${API}/users/${user._id}`, {
       method: "DELETE",
       headers: {
         Authorization: "Bearer " + ReactSession.get("token"),

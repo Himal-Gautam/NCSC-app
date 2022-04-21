@@ -24,9 +24,6 @@ import { API } from "../global.js";
 import InputLabel from "@mui/material/InputLabel";
 import Paper from "@mui/material/Paper";
 import InputBase from "@mui/material/InputBase";
-import MenuIcon from "@mui/icons-material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
-import DirectionsIcon from "@mui/icons-material/Directions";
 import MenuItem from "@mui/material/MenuItem";
 export function Subjects() {
   const [subjects, setSubjects] = useState([]);
@@ -61,7 +58,7 @@ export function Subjects() {
   }, []);
 
   function updateUsers() {
-    fetch("http://localhost:4000/users", {
+    fetch(`${API}/users`, {
       method: "GET",
       headers: new Headers({
         Authorization: "Bearer " + ReactSession.get("token"),
@@ -304,7 +301,7 @@ export function Subjects() {
           <Button
             onClick={type === "add" ? handleAdd : handleEdit}
             type="submit"
-            disabled={name === "" || code === "" || tid === ""}
+            // disabled={name === "" || code === "" || tid === ""}
           >
             Submit
           </Button>
