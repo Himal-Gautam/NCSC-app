@@ -98,7 +98,7 @@ export function Subjects() {
     await fetch(`${API}/subjects/${subject._id}`, {
       method: "PATCH",
       body: JSON.stringify({
-        name: name,
+        name: subject.name,
         code: code,
         teacherId: tid,
       }),

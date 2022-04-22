@@ -25,6 +25,7 @@ import Box from "@mui/material/Box";
 
 export function Assignments() {
   const [assignments, setAssignments] = useState([]);
+  const [assignment, setAssignment] = useState();
   const [open, setopen] = useState(false);
   const [type, setType] = useState("add");
   const [id, setId] = useState("");
@@ -43,7 +44,7 @@ export function Assignments() {
     })
       .then((response) => response.json())
       .then((data) => {
-        setSubjects(data.map((subject) => subject.name));
+        setSubjects(data.filter((subject) => subject.teacher.uid === ReactSession.get("uid")));
       })
       .catch((err) => {
         console.log(err);
@@ -60,6 +61,7 @@ export function Assignments() {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log(data)
         setAssignments(data);
       })
       .catch((err) => {
@@ -75,26 +77,33 @@ export function Assignments() {
   async function handleAdd() {
     console.log("hello")
     if (title !== "" && description !== "") {
-      let data = new FormData();
-      data.append("mySubject", choice);
+      // let data = new FormData();
+      // data.append("mySubject", choice);
+      // console.log(data)
+
+      let data = {
+        title: title,
+        description: description,
+        subject: choice,
+      }
       console.log(data)
       await fetch(`${API}/assignments`, {
         method: "POST",
-        // body: JSON.stringify({
-        //   title: title,
-        //   description: description,
-        //   subject: choice,
-        // }),
-        body: data,
+        body: JSON.stringify({
+          title: title,
+          description: description,
+          subject: choice,
+        }),
+        // body: data,
         headers: {
-          Accept: 'application/form-data',
+          // Accept: 'application/form-data',
           Authorization: "Bearer " + ReactSession.get("token"),
           "Content-Type": "application/json; charset=UTF-8",
         },
       });
 
-      // updateAssignments();
-      // setopen(!open);
+      updateAssignments();
+      setopen(!open);
     }
   }
 
@@ -123,17 +132,18 @@ export function Assignments() {
     }
   }
 
-  // async function handleDelete(id) {
-  //     await fetch(`${API}/notices/${id}`, {
-  //       method: "DELETE",
-  //       headers: {
-  //         Authorization: "Bearer " + ReactSession.get("token"),
-  //         "Content-Type": "application/json; charset=UTF-8",
-  //       },
-  //     });
-  //     updateAssignments();
+  async function handleDelete() {
+    console.log("delete request", id)
+      await fetch(`${API}/assignments/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: "Bearer " + ReactSession.get("token"),
+          "Content-Type": "application/json; charset=UTF-8",
+        },
+      });
+      updateAssignments();
 
-  // }
+  }
 
   return (
     <div className="area notices-area">
@@ -146,10 +156,10 @@ export function Assignments() {
               </Typography>
               <Typography variant="body1">{assignment.description}</Typography>
               <Typography color="text.secondary">
-                {assignment.teacher.name}
+                
               </Typography>
               <Typography color="text.secondary">
-                {assignment.subject.name}
+                {assignment.teacher.name} - {assignment.subject.name}
               </Typography>
               <Typography color="text.secondary">
                 {assignment.updatedAt
@@ -162,14 +172,14 @@ export function Assignments() {
               </Typography>
             </div>
           </CardContent>
-          {ReactSession.get("type") === "student" ? (
+          {ReactSession.get("type") === "student" || ReactSession.get("uid") !== assignment.teacher.uid ? (
             <></>
           ) : (
             <CardActions>
               <IconButton
-                color="warning"
                 onClick={() => {
                   setId(assignment._id);
+                  setAssignment(assignment);
                   setType("edit");
                   setopen(true);
                 }}
@@ -177,10 +187,11 @@ export function Assignments() {
                 <EditIcon />
               </IconButton>
               <IconButton
-                color="warning"
+                color="error"
                 onClick={() => {
+                  setAssignment(assignment);
                   setId(assignment._id);
-                  // handleDelete(assignment._id)
+                  handleDelete()
                 }}
               >
                 <DeleteIcon />
@@ -198,7 +209,7 @@ export function Assignments() {
           style={{ position: "fixed", right: "20px", bottom: "20px" }}
           size="large"
           onClick={() => {
-            setType("give");
+            setType("add")
             setopen(true);
           }}
         >
@@ -207,7 +218,7 @@ export function Assignments() {
       )}
       <Dialog open={open} onClose={() => setopen(false)}>
         <DialogTitle>
-          {type === "give" ? "Give " : "Edit "}Assignment
+          {type === "add" ? "Give " : "Edit "}Assignment
         </DialogTitle>
         <Box
           component="form"
@@ -217,7 +228,7 @@ export function Assignments() {
         >
           <DialogContent>
             <DialogContentText>
-              To {type === "give" ? "Give " : "Edit "}Assignment in the
+              To {type === "add" ? "Give " : "Edit "}Assignment in the
               Assignments List please fill the below details
               {<br />}
               It is cumpulsory to fill all fields else form doesn't get
@@ -252,12 +263,12 @@ export function Assignments() {
                 id="demo-simple-select"
                 value={choice}
                 label="Choose Subject"
-                onChange={handleChange}
+                onChange={(event) => setChoice(event.target.value)}
                 fullWidth
               >
                 <MenuItem value="">Select</MenuItem>
                 {subjects.map((subject) => (
-                  <MenuItem value={subject}>{subject}</MenuItem>
+                  <MenuItem value={subject._id}>{subject.name}</MenuItem>
                 ))}
               </Select>
             </FormControl>

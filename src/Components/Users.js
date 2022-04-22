@@ -59,8 +59,7 @@ export function Users() {
   }, []);
 
   async function handleAdd() {
-    setopen(!open);
-    fetch(`${API}/users`, {
+    await fetch(`${API}/users`, {
       method: "POST",
       headers: new Headers({
         "Content-Type": "application/json; charset=UTF-8",
@@ -78,24 +77,28 @@ export function Users() {
       console.log(err);
     });
     updateUsers();
+    setopen(!open);
   }
 
   async function handleEdit() {
     console.log(user._id);
-    setopen(!open);
 
-    //   // setSnackOpen(true);
-    await fetch(`${API}/user/${user._id}`, {
+    let data = {
+      name: name,
+      email: email,
+      age: age,
+      phone: phone,
+      uid: uid,
+      role: role,
+    }
+
+    if(password!=="********"){
+      data["password"] = password
+    }
+
+    await fetch(`${API}/users/${user._id}`, {
       method: "PATCH",
-      body: JSON.stringify({
-        name: name,
-        email: email,
-        age: age,
-        phone: phone,
-        uid: uid,
-        role: role,
-        password: password,
-      }),
+      body: JSON.stringify(data),
       headers: {
         Authorization: "Bearer " + ReactSession.get("token"),
         "Content-Type": "application/json; charset=UTF-8",
@@ -103,17 +106,20 @@ export function Users() {
     });
 
     updateUsers();
+    setopen(!open);
   }
 
   async function handleDelete() {
-    await fetch(`${API}/users/${user._id}`, {
+    await fetch(`${API}/users/${uid}`, {
       method: "DELETE",
       headers: {
         Authorization: "Bearer " + ReactSession.get("token"),
         "Content-Type": "application/json; charset=UTF-8",
       },
     });
-    updateUsers();
+
+    // setTimeout( updateUsers, 100)
+    updateUsers()
   }
 
   return (
@@ -228,13 +234,13 @@ export function Users() {
                 <IconButton
                   color="info"
                   onClick={() => {
-                    setUser(user);
                     setName(user.name);
                     setEmail(user.email);
                     setRole(user.role);
                     setAge(user.age);
                     setPhone(user.phone);
                     setUid(user.uid);
+                    setUser(user);
                     setType("edit");
                     setopen(true);
                   }}
@@ -244,7 +250,7 @@ export function Users() {
                 <IconButton
                   color="error"
                   onClick={() => {
-                    setUser(user);
+                    setUid(user._id);
                     handleDelete();
                   }}
                 >
@@ -364,7 +370,7 @@ export function Users() {
           <Button
             onClick={type === "add" ? handleAdd : handleEdit}
             type="submit"
-            disabled={password === ""}
+            // disabled={password === ""}
           >
             Submit
           </Button>
