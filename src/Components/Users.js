@@ -227,6 +227,7 @@ export function Users() {
                 </CardContent>
               </div>
             </CardContent>
+            
             {ReactSession.get("type") === "student" ? (
               <></>
             ) : (

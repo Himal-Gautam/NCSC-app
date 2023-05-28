@@ -44,7 +44,11 @@ export function Assignments() {
     })
       .then((response) => response.json())
       .then((data) => {
-        setSubjects(data.filter((subject) => subject.teacher.uid === ReactSession.get("uid")));
+        setSubjects(
+          data.filter(
+            (subject) => subject.teacher.uid === ReactSession.get("uid")
+          )
+        );
       })
       .catch((err) => {
         console.log(err);
@@ -61,7 +65,7 @@ export function Assignments() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data)
+        console.log(data);
         setAssignments(data);
       })
       .catch((err) => {
@@ -75,7 +79,7 @@ export function Assignments() {
   }, []);
 
   async function handleAdd() {
-    console.log("hello")
+    console.log("hello");
     if (title !== "" && description !== "") {
       // let data = new FormData();
       // data.append("mySubject", choice);
@@ -85,8 +89,8 @@ export function Assignments() {
         title: title,
         description: description,
         subject: choice,
-      }
-      console.log(data)
+      };
+      console.log(data);
       await fetch(`${API}/assignments`, {
         method: "POST",
         body: JSON.stringify({
@@ -133,16 +137,15 @@ export function Assignments() {
   }
 
   async function handleDelete() {
-    console.log("delete request", id)
-      await fetch(`${API}/assignments/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: "Bearer " + ReactSession.get("token"),
-          "Content-Type": "application/json; charset=UTF-8",
-        },
-      });
-      updateAssignments();
-
+    console.log("delete request", id);
+    await fetch(`${API}/assignments/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + ReactSession.get("token"),
+        "Content-Type": "application/json; charset=UTF-8",
+      },
+    });
+    updateAssignments();
   }
 
   return (
@@ -155,9 +158,7 @@ export function Assignments() {
                 {assignment.title}
               </Typography>
               <Typography variant="body1">{assignment.description}</Typography>
-              <Typography color="text.secondary">
-                
-              </Typography>
+              <Typography color="text.secondary"></Typography>
               <Typography color="text.secondary">
                 {assignment.teacher.name} - {assignment.subject.name}
               </Typography>
@@ -172,9 +173,8 @@ export function Assignments() {
               </Typography>
             </div>
           </CardContent>
-          {ReactSession.get("type") === "student" || ReactSession.get("uid") !== assignment.teacher.uid ? (
-            <></>
-          ) : (
+          {ReactSession.get("type") === "admin" ||
+          ReactSession.get("uid") === assignment.teacher.uid ? (
             <CardActions>
               <IconButton
                 onClick={() => {
@@ -191,12 +191,14 @@ export function Assignments() {
                 onClick={() => {
                   setAssignment(assignment);
                   setId(assignment._id);
-                  handleDelete()
+                  handleDelete();
                 }}
               >
                 <DeleteIcon />
               </IconButton>
             </CardActions>
+          ) : (
+            <></>
           )}
         </Card>
       ))}
@@ -209,7 +211,7 @@ export function Assignments() {
           style={{ position: "fixed", right: "20px", bottom: "20px" }}
           size="large"
           onClick={() => {
-            setType("add")
+            setType("add");
             setopen(true);
           }}
         >
@@ -245,6 +247,7 @@ export function Assignments() {
               variant="filled"
               onChange={(event) => setTitle(event.target.value)}
               required
+            defaultValue={type === "edit" ? assignment.title : ""}
             />
             <TextField
               margin="dense"
@@ -254,6 +257,7 @@ export function Assignments() {
               fullWidth
               variant="filled"
               onChange={(event) => setDescription(event.target.value)}
+              defaultValue={type === "edit" ? assignment.description : ""}
               required
             />
             <FormControl fullWidth sx={{ mt: 2 }}>
@@ -279,7 +283,9 @@ export function Assignments() {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setopen(false)}>Cancel</Button>
-            <Button onClick={type === "add" ? handleAdd : handleEdit} >Submit</Button>
+            <Button onClick={type === "add" ? handleAdd : handleEdit}>
+              Submit
+            </Button>
           </DialogActions>
         </Box>
       </Dialog>
